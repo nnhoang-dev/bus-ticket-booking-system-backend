@@ -18,4 +18,10 @@ class NhaXe extends Model
         'phone_number',
         'status'
     ];
+
+    // public function tuyen_xe()
+    // {
+    //     return $this->hasMany(TuyenXe::class);
+    //     // return $this->hasOne(TuyenXe::class, 'id');
+    // }
 }

@@ -26,9 +26,11 @@ return new class extends Migration
                 ->on('xe')
                 ->onDelete('cascade');
 
-            $table->string('date');
-            $table->string('start_time');
-            $table->string('end_time');
+            $table->string('seat')->default("");
+            $table->date('date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

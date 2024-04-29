@@ -19,6 +19,7 @@ class TuyenXeResource extends JsonResource
             'start_address' => $this->start_address,
             'end_address' => $this->end_address,
             'status' => $this->status,
+            'time' => $this->time,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

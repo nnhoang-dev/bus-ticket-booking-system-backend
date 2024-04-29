@@ -25,7 +25,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('nha_xe')
                 ->onDelete('cascade');
-
+            $table->time('time');
             $table->unique(['start_address', 'end_address'], 'unique_tuyen_xe_route');
             $table->boolean('status')->default(1);
             $table->timestamps();

@@ -18,6 +18,7 @@ class TuyenXe extends Model
         'id',
         'start_address',
         'end_address',
+        'time',
         'status'
     ];
 
@@ -30,4 +31,9 @@ class TuyenXe extends Model
     {
         return $this->belongsTo(NhaXe::class, 'end_address');
     }
+
+    // public function chuyen_xe()
+    // {
+    //     return $this->hasMany(ChuyenXe::class);
+    // }
 }
