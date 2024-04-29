@@ -8,6 +8,7 @@ use App\Models\NhanVien;
 use App\Models\KhachHang;
 use App\Models\NhaXe;
 use App\Models\Xe;
+use App\Models\KhuyenMai;
 
 
 class DatabaseSeeder extends Seeder
@@ -21,5 +22,6 @@ class DatabaseSeeder extends Seeder
         NhanVien::factory()->count(10)->create();
         KhachHang::factory()->count(10)->create();
         Xe::factory()->count(10)->create();
+        KhuyenMai::factory()->count(10)->create();
     }
 }

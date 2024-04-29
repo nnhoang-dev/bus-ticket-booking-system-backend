@@ -6,16 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('nhan_vien', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('phone_number')->unique();
             $table->string('password');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth');
@@ -24,12 +22,13 @@ return new class extends Migration
             $table->string('role');
             $table->boolean('status')->default(1);
             $table->timestamps();
+
+            Schema::index('nhan_vien.phone_number');
+            Schema::index('nhan_vien.email');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('nhan_vien');

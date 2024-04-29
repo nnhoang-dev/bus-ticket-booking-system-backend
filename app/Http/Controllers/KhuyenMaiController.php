@@ -7,16 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
-use App\Http\Resources\XeResource;
-use App\Models\Xe;
+use App\Http\Resources\KhuyenMaiResource;
+use App\Models\KhuyenMai;
 
-class XeController extends Controller
+class KhuyenMaiController extends Controller
 {
     public function index()
     {
         try {
-            $xe = Xe::all();
-            return XeResource::collection($xe);
+            $khuyenMai = KhuyenMai::all();
+            return KhuyenMaiResource::collection($khuyenMai);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -26,7 +26,8 @@ class XeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
+                'id' => 'required|string|unique:khuyen_mai,id',
+                'discount' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
 
@@ -37,9 +38,8 @@ class XeController extends Controller
             }
 
             $data = $request->all();
-            $data['id'] = Uuid::uuid4()->toString();
-            Xe::create($data);
-            return response()->json(['message' => 'Tạo xe thành công'], 201);
+            KhuyenMai::create($data);
+            return response()->json(['message' => 'Tạo khuyến mãi thành công'], 201);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -48,11 +48,11 @@ class XeController extends Controller
     public function show(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $khuyenMai = KhuyenMai::find($id);
+            if (!$khuyenMai) {
+                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
             }
-            return new XeResource($xe);
+            return new KhuyenMaiResource($khuyenMai);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -62,7 +62,8 @@ class XeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
+                'id' => 'required|string|unique:khuyen_mai,id',
+                'discount' => 'required|integer',
                 'status' => 'in:0,1',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
@@ -73,16 +74,16 @@ class XeController extends Controller
             }
 
 
-            // find xe
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            // find khuyến mãi
+            $khuyenMai = KhuyenMai::find($id);
+            if (!$khuyenMai) {
+                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
             }
 
             $data = $request->all();
 
-            $xe->update($data);
-            return response()->json(['message' => 'Cập nhật xe thành công'], 200);
+            $khuyenMai->update($data);
+            return response()->json(['message' => 'Cập nhật khuyến mãi thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -92,13 +93,13 @@ class XeController extends Controller
     public function destroy(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $khuyenMai = KhuyenMai::find($id);
+            if (!$khuyenMai) {
+                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
             }
 
-            $xe->delete();
-            return response()->json(['message' => 'Xóa xe thành công'], 200);
+            $khuyenMai->delete();
+            return response()->json(['message' => 'Xóa khuyến mãi thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

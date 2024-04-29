@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('khach_hang', function (Blueprint $table) {
@@ -23,12 +21,13 @@ return new class extends Migration
             $table->string('address');
             $table->boolean('status')->default(1);
             $table->timestamps();
+
+            Schema::index('khach_hang.phone_number');
+            Schema::index('khach_hang.email');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('khach_hang');

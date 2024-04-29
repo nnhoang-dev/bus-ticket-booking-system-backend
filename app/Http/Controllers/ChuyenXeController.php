@@ -9,6 +9,7 @@ use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
 
 use App\Models\ChuyenXe;
+use App\Models\NhanVien;
 use App\Models\TuyenXe;
 use App\Models\Xe;
 
@@ -31,6 +32,7 @@ class ChuyenXeController extends Controller
             $validator = Validator::make($request->all(), [
                 'tuyen_xe_id' => 'required|string',
                 'xe_id' => 'required|string',
+                'tai_xe_id' => 'required|string',
                 'date' => 'required|string',
                 'start_time' => 'required|string',
             ]);
@@ -42,13 +44,14 @@ class ChuyenXeController extends Controller
             }
 
             $data = $request->all();
+            $taiXe = NhanVien::find($data['tai_xe_id']);
             $tuyenXe = TuyenXe::find($data['tuyen_xe_id']);
             $xe = Xe::find($data['xe_id']);
             if (
-                !$tuyenXe || !$xe
+                !$tuyenXe || !$xe || !$taiXe
                 || ($tuyenXe['status'] == 0)
                 || ($xe['status'] == 0)
-                || ($tuyenXe == $xe)
+                || ($taiXe['status'] == 0)
             ) {
                 return response()->json(["message" => "1Tạo chuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
             }
@@ -106,15 +109,16 @@ class ChuyenXeController extends Controller
             }
 
             $data = $request->all();
+            $taiXe = NhanVien::find($data['tai_xe_id']);
             $tuyenXe = TuyenXe::find($data['tuyen_xe_id']);
             $xe = Xe::find($data['xe_id']);
             if (
-                !$tuyenXe || !$xe
+                !$tuyenXe || !$xe || !$taiXe
                 || ($tuyenXe['status'] == 0)
                 || ($xe['status'] == 0)
-                || ($tuyenXe == $xe)
+                || ($taiXe['status'] == 0)
             ) {
-                return response()->json(["message" => "Tạo chuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
+                return response()->json(["message" => "Tạo chuyến xe không thành công do thông tin không hợp lệ"], 400);
             }
 
             // auto generated end_time

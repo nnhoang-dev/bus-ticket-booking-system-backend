@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HoaDonResource;
+use App\Models\HoaDon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
-use App\Http\Resources\XeResource;
-use App\Models\Xe;
-
-class XeController extends Controller
+class HoaDonController extends Controller
 {
     public function index()
     {
         try {
-            $xe = Xe::all();
-            return XeResource::collection($xe);
+            $hoaDon = HoaDon::all();
+            return HoaDonResource::collection($hoaDon);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -26,7 +26,14 @@ class XeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
+                'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
+                'email' => 'email',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'discount' => 'integer',
+                'price' => 'required|integer',
+                'quantity' => 'required|integer',
+                'total_price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
 
@@ -38,8 +45,9 @@ class XeController extends Controller
 
             $data = $request->all();
             $data['id'] = Uuid::uuid4()->toString();
-            Xe::create($data);
-            return response()->json(['message' => 'Tạo xe thành công'], 201);
+
+            HoaDon::create($data);
+            return response()->json(['message' => 'Tạo hóa đơn thành công'], 201);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -48,11 +56,11 @@ class XeController extends Controller
     public function show(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $hoaDon = HoaDon::find($id);
+            if (!$hoaDon) {
+                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
             }
-            return new XeResource($xe);
+            return new HoaDonResource($hoaDon);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -62,10 +70,17 @@ class XeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
-                'status' => 'in:0,1',
+                'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
+                'email' => 'email',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'discount' => 'integer',
+                'price' => 'required|integer',
+                'quantity' => 'required|integer',
+                'total_price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
+
                 $errors = $validator->errors();
                 foreach ($errors->all() as $error) {
                     return response()->json(["message" => $error], 400);
@@ -73,32 +88,32 @@ class XeController extends Controller
             }
 
 
-            // find xe
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            // find hóa đơn
+            $hoaDon = HoaDon::find($id);
+            if (!$hoaDon) {
+                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
             }
 
             $data = $request->all();
-
-            $xe->update($data);
-            return response()->json(['message' => 'Cập nhật xe thành công'], 200);
+            $hoaDon->update($data);
+            return response()->json(['message' => 'Cập nhật hóa đơn thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
 
+
     public function destroy(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $hoaDon = HoaDon::find($id);
+            if (!$hoaDon) {
+                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
             }
 
-            $xe->delete();
-            return response()->json(['message' => 'Xóa xe thành công'], 200);
+            $hoaDon->delete();
+            return response()->json(['message' => 'Xóa hóa đơn thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

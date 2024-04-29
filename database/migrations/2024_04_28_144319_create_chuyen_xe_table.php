@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('chuyen_xe', function (Blueprint $table) {
@@ -17,14 +15,17 @@ return new class extends Migration
             $table->string('tuyen_xe_id');
             $table->foreign('tuyen_xe_id')
                 ->references('id')
-                ->on('tuyen_xe')
-                ->onDelete('cascade');
+                ->on('tuyen_xe');
 
             $table->string('xe_id');
             $table->foreign('xe_id')
                 ->references('id')
-                ->on('xe')
-                ->onDelete('cascade');
+                ->on('xe');
+
+            $table->string('tai_xe_id');
+            $table->foreign('nhan_vien_id')
+                ->references('id')
+                ->on('nhan_vien');
 
             $table->string('seat')->default("");
             $table->date('date');
@@ -32,12 +33,13 @@ return new class extends Migration
             $table->time('end_time');
             $table->boolean('status')->default(1);
             $table->timestamps();
+
+            Schema::index('chuyen_xe.tuyen_xe_id');
+            Schema::index('chuyen_xe.xe_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('chuyen_xe');
