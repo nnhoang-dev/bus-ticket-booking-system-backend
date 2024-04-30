@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::create('hoa_don', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            // $table->string('khach_hang_id');
-            // $table->foreign('khach_hang_id')
-            //     ->references('id')
-            //     ->on('khach_hang');
+            $table->string('khach_hang_id');
+            $table->foreign('khach_hang_id')
+                ->references('id')
+                ->on('khach_hang');
 
             $table->string('phone_number');
             $table->string('email')->nullable();

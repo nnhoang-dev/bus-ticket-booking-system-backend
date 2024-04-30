@@ -13,7 +13,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('phone_number')->unique();
             $table->string('password');
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth');
@@ -22,9 +22,8 @@ return new class extends Migration
             $table->string('role');
             $table->boolean('status')->default(1);
             $table->timestamps();
-
-            Schema::index('nhan_vien.phone_number');
-            Schema::index('nhan_vien.email');
+            $table->index('phone_number');
+            $table->index('email');
         });
     }
 

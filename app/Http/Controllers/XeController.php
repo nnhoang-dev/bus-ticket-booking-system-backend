@@ -63,7 +63,7 @@ class XeController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'license' => 'required|string|unique:xe,license',
-                'status' => 'in:0,1',
+                'status' => 'required|in:0,1',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();

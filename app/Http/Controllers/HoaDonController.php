@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HoaDonResource;
 use App\Models\HoaDon;
+use App\Models\KhachHang;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
@@ -22,35 +22,63 @@ class HoaDonController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store($request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
-                'email' => 'email',
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
-                'discount' => 'integer',
-                'price' => 'required|integer',
-                'quantity' => 'required|integer',
-                'total_price' => 'required|integer',
-            ]);
-            if ($validator->stopOnFirstFailure()->fails()) {
+        $validator = Validator::make($request, [
+            'khach_hang_id' => 'required|string|exists:khach_hang,id',
+            // 'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
+            // 'email' => 'email',
+            // 'first_name' => 'required|string|max:255',
+            // 'last_name' => 'required|string|max:255',
+            // 'discount' => 'integer',
+            // 'price' => 'required|integer',
+            // 'quantity' => 'required|integer',
+        ]);
+        if ($validator->stopOnFirstFailure()->fails()) {
 
-                $errors = $validator->errors();
-                foreach ($errors->all() as $error) {
-                    return response()->json(["message" => $error], 400);
-                }
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
             }
-
-            $data = $request->all();
-            $data['id'] = Uuid::uuid4()->toString();
-
-            HoaDon::create($data);
-            return response()->json(['message' => 'Tạo hóa đơn thành công'], 201);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
+
+        return $request;
+        // try {
+        //     $validator = Validator::make($request->all(), [
+        //         'khach_hang_id' => 'required|string',
+        //         'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
+        //         'email' => 'email',
+        //         'first_name' => 'required|string|max:255',
+        //         'last_name' => 'required|string|max:255',
+        //         'discount' => 'integer',
+        //         'price' => 'required|integer',
+        //         'quantity' => 'required|integer',
+        //     ]);
+        //     if ($validator->stopOnFirstFailure()->fails()) {
+
+        //         $errors = $validator->errors();
+        //         foreach ($errors->all() as $error) {
+        //             return response()->json(["message" => $error], 400);
+        //         }
+        //     }
+
+        //     $data = $request->all();
+        //     $khachHang = KhachHang::find($data['khach_hang_id']);
+        //     if (!$khachHang || ($khachHang['status'] == 0)) {
+        //         return response()->json(["message" => "Tạo hóa đơn không thành công do thông tin không hợp lệ"], 400);
+        //     }
+        //     $data['id'] = Uuid::uuid4()->toString();
+        //     if (isset($data['discount'])) {
+        //         $data['total_price'] = $data['price'] * $data['quantity'] * (1 - ($data['discount'] / 100));
+        //     } else {
+        //         $data['total_price'] = $data['price'] * $data['quantity'];
+        //     }
+
+        //     HoaDon::create($data);
+        //     return response()->json(['message' => 'Tạo hóa đơn thành công'], 201);
+        // } catch (\Throwable $th) {
+        //     return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        // }
     }
 
     public function show(string $id)
@@ -70,6 +98,7 @@ class HoaDonController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
+                'khach_hang_id' => 'required|string',
                 'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
                 'email' => 'email',
                 'first_name' => 'required|string|max:255',
@@ -77,7 +106,6 @@ class HoaDonController extends Controller
                 'discount' => 'integer',
                 'price' => 'required|integer',
                 'quantity' => 'required|integer',
-                'total_price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
 
@@ -85,6 +113,11 @@ class HoaDonController extends Controller
                 foreach ($errors->all() as $error) {
                     return response()->json(["message" => $error], 400);
                 }
+            }
+            $data = $request->all();
+            $khachHang = KhachHang::find($data['khach_hang_id']);
+            if (!$khachHang || ($khachHang['status'] == 0)) {
+                return response()->json(["message" => "Tạo hóa đơn không thành công do thông tin không hợp lệ"], 400);
             }
 
 
@@ -94,7 +127,13 @@ class HoaDonController extends Controller
                 return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
             }
 
-            $data = $request->all();
+            // tinh tong gia
+            if (isset($data['discount'])) {
+                $data['total_price'] = $data['price'] * $data['quantity'] * (1 - ($data['discount'] / 100));
+            } else {
+                $data['total_price'] = $data['price'] * $data['quantity'];
+            }
+
             $hoaDon->update($data);
             return response()->json(['message' => 'Cập nhật hóa đơn thành công'], 200);
         } catch (\Throwable $th) {

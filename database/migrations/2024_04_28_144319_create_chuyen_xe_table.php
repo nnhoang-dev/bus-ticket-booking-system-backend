@@ -23,10 +23,11 @@ return new class extends Migration
                 ->on('xe');
 
             $table->string('tai_xe_id');
-            $table->foreign('nhan_vien_id')
+            $table->foreign('tai_xe_id')
                 ->references('id')
                 ->on('nhan_vien');
 
+            $table->integer('price');
             $table->string('seat')->default("");
             $table->date('date');
             $table->time('start_time');
@@ -34,8 +35,9 @@ return new class extends Migration
             $table->boolean('status')->default(1);
             $table->timestamps();
 
-            Schema::index('chuyen_xe.tuyen_xe_id');
-            Schema::index('chuyen_xe.xe_id');
+            $table->index('tuyen_xe_id');
+            $table->index('xe_id');
+            $table->index('tai_xe_id');
         });
     }
 

@@ -72,7 +72,7 @@ class NhaXeController extends Controller
                 'name' => 'required|string',
                 'address' => 'required|string|unique:nha_xe,address',
                 'phone_number' => 'required|string|unique:nha_xe,phone_number',
-                'status' => 'in:0,1',
+                'status' => 'required|in:0,1',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();

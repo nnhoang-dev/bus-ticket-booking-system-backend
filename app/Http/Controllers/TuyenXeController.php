@@ -27,9 +27,10 @@ class TuyenXeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'start_address' => 'required|string',
-                'end_address' => 'required|string',
-                'time' => 'required|date_format:H:i:s'
+                'start_address' => 'required|exists:nha_xe,id',
+                'end_address' => 'required|exists:nha_xe,id',
+                'time' => 'required|date_format:H:i:s',
+                'price' => 'required|integer'
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
 
@@ -40,19 +41,18 @@ class TuyenXeController extends Controller
             }
 
             $data = $request->all();
-            $start_address = NhaXe::find($data['start_address']);
-            $end_address = NhaXe::find($data['end_address']);
-            if (
-                !$start_address || !$end_address
-                || ($start_address['status'] == 0)
-                || ($end_address['status'] == 0)
-                || ($start_address == $end_address)
-            ) {
-                return response()->json(["message" => "Tạo tuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
-            }
+            // $start_address = NhaXe::find($data['start_address']);
+            // $end_address = NhaXe::find($data['end_address']);
+            // if (
+            //     !$start_address || !$end_address
+            //     || ($start_address['status'] == 0)
+            //     || ($end_address['status'] == 0)
+            //     || ($start_address == $end_address)
+            // ) {
+            //     return response()->json(["message" => "Tạo tuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
+            // }
 
             $data['id'] = Uuid::uuid4()->toString();
-
             TuyenXe::create($data);
             return response()->json(['message' => 'Tạo tuyến xe thành công'], 201);
         } catch (\Throwable $th) {
@@ -79,10 +79,11 @@ class TuyenXeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'start_address' => 'string',
-                'end_address' => 'string',
-                'time' => 'date_format:H:i:s',
-                'status' => 'in:0,1',
+                'start_address' => 'required|exists:nha_xe,id',
+                'end_address' => 'required|exists:nha_xe,id',
+                'time' => 'required|date_format:H:i:s',
+                'price' => 'required|integer',
+                'status' => 'required|in:0,1',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();

@@ -21,9 +21,7 @@ return new class extends Migration
             $table->string('address');
             $table->boolean('status')->default(1);
             $table->timestamps();
-
-            Schema::index('khach_hang.phone_number');
-            Schema::index('khach_hang.email');
+            $table->index('phone_number');
         });
     }
 

@@ -13,6 +13,7 @@ class HoaDon extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
+        'khach_hang_id',
         'khuyen_mai_id',
         'phone_number',
         'email',

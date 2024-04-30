@@ -19,6 +19,7 @@ class TuyenXe extends Model
         'start_address',
         'end_address',
         'time',
+        'price',
         'status'
     ];
 

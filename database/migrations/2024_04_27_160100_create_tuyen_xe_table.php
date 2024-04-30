@@ -21,13 +21,15 @@ return new class extends Migration
             $table->foreign('end_address')
                 ->references('id')
                 ->on('nha_xe');
+
+            $table->integer('price');
             $table->time('time');
             $table->unique(['start_address', 'end_address'], 'unique_tuyen_xe_route');
             $table->boolean('status')->default(1);
             $table->timestamps();
 
-            Schema::index('tuyen_xe.end_address');
-            Schema::index('tuyen_xe.start_address');
+            $table->index('start_address');
+            $table->index('end_address');
         });
     }
 

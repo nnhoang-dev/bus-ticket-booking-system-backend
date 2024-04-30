@@ -30,11 +30,12 @@ class ChuyenXeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'tuyen_xe_id' => 'required|string',
-                'xe_id' => 'required|string',
-                'tai_xe_id' => 'required|string',
+                'tuyen_xe_id' => 'required|string|exists:tuyen_xe,id',
+                'xe_id' => 'required|string|exists:xe,id',
+                'tai_xe_id' => 'required|string|exists:nhan_vien,id',
                 'date' => 'required|string',
-                'start_time' => 'required|string',
+                'start_time' => 'required|date_format:H:i:s',
+                'price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -52,8 +53,9 @@ class ChuyenXeController extends Controller
                 || ($tuyenXe['status'] == 0)
                 || ($xe['status'] == 0)
                 || ($taiXe['status'] == 0)
+                || ($taiXe['role'] != "TX")
             ) {
-                return response()->json(["message" => "1Tạo chuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
+                return response()->json(["message" => "Tạo chuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
             }
 
             // auto generated end_time
@@ -90,10 +92,13 @@ class ChuyenXeController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'tuyen_xe_id' => 'string',
-                'xe_id' => 'string',
-                'date' => 'string',
-                'start_time' => 'string'
+                'tuyen_xe_id' => 'required|string|exists:tuyen_xe,id',
+                'xe_id' => 'required|string|exists:xe,id',
+                'tai_xe_id' => 'required|string|exists:nhan_vien,id',
+                'seat' => 'required|string',
+                'date' => 'required|string',
+                'start_time' => 'required|date_format:H:i:s',
+                'price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -117,6 +122,7 @@ class ChuyenXeController extends Controller
                 || ($tuyenXe['status'] == 0)
                 || ($xe['status'] == 0)
                 || ($taiXe['status'] == 0)
+                || ($taiXe['role'] != "TX")
             ) {
                 return response()->json(["message" => "Tạo chuyến xe không thành công do thông tin không hợp lệ"], 400);
             }

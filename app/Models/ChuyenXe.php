@@ -15,11 +15,13 @@ class ChuyenXe extends Model
         "id",
         "tuyen_xe_id",
         "xe_id",
+        "tai_xe_id",
         "seat",
         "date",
         "start_time",
         "end_time",
-        "status"
+        "status",
+        'price',
     ];
 
     public function xe()
@@ -30,5 +32,10 @@ class ChuyenXe extends Model
     public function tuyen_xe()
     {
         return $this->belongsTo(TuyenXe::class, 'tuyen_xe_id');
+    }
+
+    public function tai_xe()
+    {
+        return $this->belongsTo(NhanVien::class, 'tai_xe_id');
     }
 }
