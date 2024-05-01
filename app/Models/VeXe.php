@@ -16,6 +16,9 @@ class VeXe extends Model
         "chuyen_xe_id",
         "hoa_don_id",
         "khach_hang_id",
+        'first_name',
+        'last_name',
+        'phone_number',
         'route_name',
         'date',
         'start_time',
@@ -25,7 +28,6 @@ class VeXe extends Model
         'seat',
         'price',
         'license',
-        'status',
     ];
 
     // public function chuyen_xe()

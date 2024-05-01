@@ -35,7 +35,6 @@ class ChuyenXeController extends Controller
                 'tai_xe_id' => 'required|string|exists:nhan_vien,id',
                 'date' => 'required|string',
                 'start_time' => 'required|date_format:H:i:s',
-                'price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -65,6 +64,7 @@ class ChuyenXeController extends Controller
 
 
             $data['id'] = Uuid::uuid4()->toString();
+            $data['price'] = $tuyenXe->price;
             $data['end_time'] = $endTime;
             ChuyenXe::create($data);
             return response()->json(['message' => 'Tạo chuyến xe thành công'], 201);
@@ -95,6 +95,7 @@ class ChuyenXeController extends Controller
                 'tuyen_xe_id' => 'required|string|exists:tuyen_xe,id',
                 'xe_id' => 'required|string|exists:xe,id',
                 'tai_xe_id' => 'required|string|exists:nhan_vien,id',
+                'price' => 'required|integer',
                 'seat' => 'required|string',
                 'date' => 'required|string',
                 'start_time' => 'required|date_format:H:i:s',

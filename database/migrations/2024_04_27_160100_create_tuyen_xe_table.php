@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('tuyen_xe', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('name');
 
             $table->string('start_address');
             $table->foreign('start_address')
@@ -24,10 +25,10 @@ return new class extends Migration
 
             $table->integer('price');
             $table->time('time');
-            $table->unique(['start_address', 'end_address'], 'unique_tuyen_xe_route');
             $table->boolean('status')->default(1);
             $table->timestamps();
 
+            $table->unique(['start_address', 'end_address'], 'unique_tuyen_xe_route');
             $table->index('start_address');
             $table->index('end_address');
         });

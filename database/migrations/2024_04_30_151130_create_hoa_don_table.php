@@ -16,6 +16,11 @@ return new class extends Migration
                 ->references('id')
                 ->on('khach_hang');
 
+            $table->string('giao_dich_id');
+            $table->foreign('giao_dich_id')
+                ->references('id')
+                ->on('giao_dich');
+
             $table->string('phone_number');
             $table->string('email')->nullable();
             $table->string('first_name');

@@ -29,6 +29,9 @@ return new class extends Migration
                 ->references('id')
                 ->on('hoa_don');
 
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('phone_number');
             $table->string('route_name');
             $table->date('date');
             $table->time('start_time');
@@ -38,7 +41,6 @@ return new class extends Migration
             $table->string('seat');
             $table->integer('price');
             $table->string('license');
-            $table->enum('status', ['no', 'pending', 'yes'])->default('no');
             $table->timestamps();
         });
     }

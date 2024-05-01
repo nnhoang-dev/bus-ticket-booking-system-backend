@@ -26,13 +26,14 @@ class HoaDonController extends Controller
     {
         $validator = Validator::make($request, [
             'khach_hang_id' => 'required|string|exists:khach_hang,id',
-            // 'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
-            // 'email' => 'email',
-            // 'first_name' => 'required|string|max:255',
-            // 'last_name' => 'required|string|max:255',
-            // 'discount' => 'integer',
-            // 'price' => 'required|integer',
-            // 'quantity' => 'required|integer',
+            'giao_dich_id' => 'required|string|exists:giao_dich,id',
+            'phone_number' => 'required|string|digits_between:8,15|unique:khach_hang,phone_number',
+            'email' => 'email',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'discount' => 'integer',
+            'price' => 'required|integer',
+            'quantity' => 'required|integer',
         ]);
         if ($validator->stopOnFirstFailure()->fails()) {
 

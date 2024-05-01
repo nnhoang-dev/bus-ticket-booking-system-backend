@@ -20,7 +20,7 @@ class XeFactory extends Factory
         return [
             'id' => Uuid::uuid4()->toString(),
             'license' => $this->faker->name,
-            'status' => $this->faker->randomElement(['1', '0']),
+            'status' => $this->faker->randomElement(['1']),
         ];
     }
 }

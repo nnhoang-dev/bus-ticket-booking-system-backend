@@ -22,7 +22,8 @@ class NhaXeFactory extends Factory
             "name" => $this->faker->name,
             "address" => $this->faker->address,
             "phone_number" => $this->faker->phoneNumber,
-            'status' => $this->faker->randomElement(['1', '0'])
+            'status' => $this->faker->randomElement(['1']),
+
 
         ];
     }

@@ -20,7 +20,8 @@ class KhuyenMaiFactory extends Factory
         return [
             'id' => $this->faker->name,
             'discount' => $this->faker->randomFloat(2, 0, 20),
-            'status' => $this->faker->randomElement(['1', '0']),
+            'status' => $this->faker->randomElement(['1']),
+
         ];
     }
 }

@@ -16,12 +16,12 @@ class ChuyenXe extends Model
         "tuyen_xe_id",
         "xe_id",
         "tai_xe_id",
+        'price',
         "seat",
         "date",
         "start_time",
         "end_time",
         "status",
-        'price',
     ];
 
     public function xe()

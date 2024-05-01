@@ -20,7 +20,8 @@ class NhanVienFactory extends Factory
             'gender' => $this->faker->randomElement(['0', '1']),
             'address' => $this->faker->address,
             'role' => $this->faker->randomElement(['QL', 'TX', 'VH', 'CS', 'KT']),
-            'status' => $this->faker->randomElement(['1', '0']),
+            'status' => $this->faker->randomElement(['1']),
+
         ];
     }
 }

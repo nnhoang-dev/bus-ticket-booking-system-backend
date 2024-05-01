@@ -16,6 +16,7 @@ class TuyenXe extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
+        'name',
         'start_address',
         'end_address',
         'time',

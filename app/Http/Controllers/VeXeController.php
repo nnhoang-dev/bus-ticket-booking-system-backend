@@ -29,15 +29,18 @@ class VeXeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'chuyen_xe_id' => 'required|string|exists:chuyen_xe,id',
-            'khach_hang_id' => 'string|exists:khach_hang,id',
-            'hoa_don_id' => 'string|exists:hoa_don,id',
+            'khach_hang_id' => 'required|string|exists:khach_hang,id',
+            'hoa_don_id' => 'required|string|exists:hoa_don,id',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'phone_number' => 'required|string',
             'route_name' => 'required|string|max:255',
             'date' => 'required|date',
             'start_time' => 'required|date_format:H:i:s',
             'end_time' => 'required|date_format:H:i:s|after:start_time',
             'start_address' => 'required|string',
             'end_address' => 'required|string',
-            'seat' => 'required|string|max:5',
+            'seat' => 'required|string',
             'price' => 'required|integer',
             'license' => 'required|string',
         ]);
@@ -85,19 +88,21 @@ class VeXeController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'chuyen_xe_id' => 'string|exists:chuyen_xe,id',
-            'khach_hang_id' => 'string|exists:khach_hang,id',
-            'hoa_don_id' => 'string|exists:hoa_don,id',
-            'route_name' => 'string|max:255',
-            'date' => 'date',
-            'start_time' => 'date_format:H:i:s',
-            'end_time' => 'date_format:H:i:s|after:start_time',
-            'start_address' => 'string',
-            'end_address' => 'string',
-            'seat' => 'string|max:5',
-            'price' => 'integer',
-            'license' => 'string',
-            // 'status' => 'in:0,1',
+            'chuyen_xe_id' => 'required|string|exists:chuyen_xe,id',
+            'khach_hang_id' => 'required|string|exists:khach_hang,id',
+            'hoa_don_id' => 'required|string|exists:hoa_don,id',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'phone_number' => 'required|string',
+            'route_name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i:s',
+            'end_time' => 'required|date_format:H:i:s|after:start_time',
+            'start_address' => 'required|string',
+            'end_address' => 'required|string',
+            'seat' => 'required|string',
+            'price' => 'required|integer',
+            'license' => 'required|string',
         ]);
         if ($validator->stopOnFirstFailure()->fails()) {
             $errors = $validator->errors();

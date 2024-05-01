@@ -23,9 +23,9 @@ class KhachHangFactory extends Factory
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'date_of_birth' => $this->faker->date(),
-            'gender' => $this->faker->randomElement(['0', '1']),
+            'gender' => $this->faker->randomElement(['1', '0']),
             'address' => $this->faker->address,
-            'status' => $this->faker->randomElement(['1', '0']),
+            'status' => $this->faker->randomElement(['1']),
         ];
     }
 }

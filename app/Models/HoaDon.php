@@ -14,12 +14,11 @@ class HoaDon extends Model
     protected $fillable = [
         'id',
         'khach_hang_id',
-        'khuyen_mai_id',
+        'giao_dich_id',
         'phone_number',
         'email',
         'first_name',
         'last_name',
-        'status',
         'discount',
         'price',
         'quantity',

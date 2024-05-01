@@ -31,6 +31,7 @@ Route::apiResource('ve_tam', VeTamController::class);
 Route::post('dat_ve', [DatVeController::class, 'store']);
 Route::post('thanh_toan', [ThanhToanController::class, 'post']);
 Route::get('thanh_toan', [ThanhToanController::class, 'get']);
+Route::post('handleVeXe', [ThanhToanController::class, 'handleVeXe']);
 // Route::apiResource('nhan_vien', NhanVienController::class)
 //     ->middleware(NhanVienMiddleware::class);
 

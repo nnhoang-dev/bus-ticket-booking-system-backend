@@ -29,6 +29,7 @@ class TuyenXeController extends Controller
             $validator = Validator::make($request->all(), [
                 'start_address' => 'required|exists:nha_xe,id',
                 'end_address' => 'required|exists:nha_xe,id',
+                'name' => 'required|string',
                 'time' => 'required|date_format:H:i:s',
                 'price' => 'required|integer'
             ]);
@@ -81,6 +82,7 @@ class TuyenXeController extends Controller
             $validator = Validator::make($request->all(), [
                 'start_address' => 'required|exists:nha_xe,id',
                 'end_address' => 'required|exists:nha_xe,id',
+                'name' => 'required|string',
                 'time' => 'required|date_format:H:i:s',
                 'price' => 'required|integer',
                 'status' => 'required|in:0,1',
