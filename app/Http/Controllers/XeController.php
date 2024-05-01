@@ -29,7 +29,6 @@ class XeController extends Controller
                 'license' => 'required|string|unique:xe,license',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
-
                 $errors = $validator->errors();
                 foreach ($errors->all() as $error) {
                     return response()->json(["message" => $error], 400);

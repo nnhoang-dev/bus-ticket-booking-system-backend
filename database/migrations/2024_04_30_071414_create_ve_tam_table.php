@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreign('khach_hang_id')
                 ->references('id')
                 ->on('khach_hang');
-            $table->integer('seat')->between(1, 34);
+            $table->integer('seat')->between(1, 36);
             $table->timestamps();
 
             $table->unique(['chuyen_xe_id', 'seat'], 'unique_chuyen_xe_seat');

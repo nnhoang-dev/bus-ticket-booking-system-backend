@@ -22,7 +22,7 @@ class ThanhToanController extends Controller
         $seatChuyenXe = explode(",", $chuyenXe['seat']);
 
         foreach ($seatRequest as $seat) {
-            if ((!is_numeric($seat)) || (intval($seat) < 1) || (intval($seat) > 34)) {
+            if ((!is_numeric($seat)) || (intval($seat) < 1) || (intval($seat) > 36)) {
                 return false;
             }
         }
@@ -90,6 +90,52 @@ class ThanhToanController extends Controller
         }
     }
 
+    private function createVeXe($veTam, $hoa_don_id)
+    {
+        $chuyen_xe_id = $veTam->chuyen_xe_id;
+        $khach_hang_id = $veTam->khach_hang_id;
+        $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
+        $khachHang = KhachHang::find($khach_hang_id);
+
+        $tuyenXe = $chuyenXe->tuyen_xe;
+        $xe = $chuyenXe->xe;
+        $first_name = $khachHang->first_name;
+        $last_name = $khachHang->last_name;
+        $phone_number = $khachHang->phone_number;
+        $route_name = $tuyenXe->name;
+        $date = $chuyenXe->date;
+        $start_time = $chuyenXe->start_time;
+        $end_time = $chuyenXe->end_time;
+        $start_address = NhaXe::find($tuyenXe->start_address)->address;
+        $end_address = NhaXe::find($tuyenXe->end_address)->address;
+        $price = $chuyenXe->price;
+        $license = $xe->license;
+        $seat = $veTam->seat;
+
+        $veXe = [
+            "id" => Uuid::uuid4(),
+            "chuyen_xe_id" => $chuyen_xe_id,
+            "khach_hang_id" => $khach_hang_id,
+            "hoa_don_id" => $hoa_don_id,
+            "first_name" => $first_name,
+            "last_name" => $last_name,
+            "phone_number" => $phone_number,
+            "route_name" => $route_name,
+            "date" => $date,
+            "start_time" => $start_time,
+            "end_time" => $end_time,
+            "start_address" => $start_address,
+            "end_address" => $end_address,
+            "seat" => $seat,
+            "price" => $price,
+            "license" => $license,
+        ];
+
+        VeXe::create($veXe);
+
+        return $veXe['id'];
+    }
+
 
 
     public function handleVeXe($data, $hoa_don_id)
@@ -99,47 +145,8 @@ class ThanhToanController extends Controller
         foreach ($seats as $seat) {
 
             $veTam = VeTam::find($seat);
-            $chuyen_xe_id = $veTam->chuyen_xe_id;
-            $khach_hang_id = $veTam->khach_hang_id;
-            $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
-            $khachHang = KhachHang::find($khach_hang_id);
-
-            $tuyenXe = $chuyenXe->tuyen_xe;
-            $xe = $chuyenXe->xe;
-            $first_name = $khachHang->first_name;
-            $last_name = $khachHang->last_name;
-            $phone_number = $khachHang->phone_number;
-            $route_name = $tuyenXe->name;
-            $date = $chuyenXe->date;
-            $start_time = $chuyenXe->start_time;
-            $end_time = $chuyenXe->end_time;
-            $start_address = NhaXe::find($tuyenXe->start_address)->address;
-            $end_address = NhaXe::find($tuyenXe->end_address)->address;
-            $price = $chuyenXe->price;
-            $license = $xe->license;
-            $seat = $veTam->seat;
-
-            $veXe = [
-                "id" => Uuid::uuid4(),
-                "chuyen_xe_id" => $chuyen_xe_id,
-                "khach_hang_id" => $khach_hang_id,
-                "hoa_don_id" => $hoa_don_id,
-                "first_name" => $first_name,
-                "last_name" => $last_name,
-                "phone_number" => $phone_number,
-                "route_name" => $route_name,
-                "date" => $date,
-                "start_time" => $start_time,
-                "end_time" => $end_time,
-                "start_address" => $start_address,
-                "end_address" => $end_address,
-                "seat" => $seat,
-                "price" => $price,
-                "license" => $license,
-            ];
-
-            VeXe::create($veXe);
-            array_push($res, $veXe['id']);
+            $ve_xe_id = $this->createVeXe($veTam, $hoa_don_id);
+            array_push($res, $ve_xe_id);
             $veTam->delete();
         }
         return join(",", $res);
@@ -239,13 +246,13 @@ class ThanhToanController extends Controller
     {
         $ip = $request->ip();
         if ($ip != '127.0.0.1') {
-            return redirect('http://localhost:3000?status=fail');
+            return redirect('http://localhost:3000?status=fail&message=ip');
         }
 
         $khach_hang_id = $request->input("khach_hang_id");
         $khachHang = KhachHang::find($khach_hang_id);
         if (!$khachHang) {
-            return redirect("http://localhost:3000?status=fail");
+            return redirect("http://localhost:3000?status=failmessage=KHachHang");
         }
 
         $giaoDich = [];
