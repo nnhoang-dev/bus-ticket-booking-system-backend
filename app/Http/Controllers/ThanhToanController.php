@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmAccount;
 use App\Models\ChuyenXe;
 use App\Models\GiaoDich;
 use App\Models\HoaDon;
@@ -11,11 +12,20 @@ use App\Models\TuyenXe;
 use App\Models\VeTam;
 use App\Models\VeXe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
 class ThanhToanController extends Controller
 {
+    public function testMail()
+    {
+        $otp = "12345";
+        $response = Mail::to('nnhoanghd2004@gmail.com')->send(new ConfirmAccount($otp));
+        dd($response);
+        // return $response;
+    }
+
     private function checkSeat($seat, $chuyenXe)
     {
         $seatRequest = explode(",", $seat);
@@ -90,67 +100,7 @@ class ThanhToanController extends Controller
         }
     }
 
-    private function createVeXe($veTam, $hoa_don_id)
-    {
-        $chuyen_xe_id = $veTam->chuyen_xe_id;
-        $khach_hang_id = $veTam->khach_hang_id;
-        $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
-        $khachHang = KhachHang::find($khach_hang_id);
 
-        $tuyenXe = $chuyenXe->tuyen_xe;
-        $xe = $chuyenXe->xe;
-        $first_name = $khachHang->first_name;
-        $last_name = $khachHang->last_name;
-        $phone_number = $khachHang->phone_number;
-        $route_name = $tuyenXe->name;
-        $date = $chuyenXe->date;
-        $start_time = $chuyenXe->start_time;
-        $end_time = $chuyenXe->end_time;
-        $start_address = NhaXe::find($tuyenXe->start_address)->address;
-        $end_address = NhaXe::find($tuyenXe->end_address)->address;
-        $price = $chuyenXe->price;
-        $license = $xe->license;
-        $seat = $veTam->seat;
-
-        $veXe = [
-            "id" => Uuid::uuid4(),
-            "chuyen_xe_id" => $chuyen_xe_id,
-            "khach_hang_id" => $khach_hang_id,
-            "hoa_don_id" => $hoa_don_id,
-            "first_name" => $first_name,
-            "last_name" => $last_name,
-            "phone_number" => $phone_number,
-            "route_name" => $route_name,
-            "date" => $date,
-            "start_time" => $start_time,
-            "end_time" => $end_time,
-            "start_address" => $start_address,
-            "end_address" => $end_address,
-            "seat" => $seat,
-            "price" => $price,
-            "license" => $license,
-        ];
-
-        VeXe::create($veXe);
-
-        return $veXe['id'];
-    }
-
-
-
-    public function handleVeXe($data, $hoa_don_id)
-    {
-        $seats = explode(',', $data);
-        $res = [];
-        foreach ($seats as $seat) {
-
-            $veTam = VeTam::find($seat);
-            $ve_xe_id = $this->createVeXe($veTam, $hoa_don_id);
-            array_push($res, $ve_xe_id);
-            $veTam->delete();
-        }
-        return join(",", $res);
-    }
 
     public function post(Request $request)
     {
@@ -242,6 +192,82 @@ class ThanhToanController extends Controller
         return response()->json($vnp_Url, 200);
     }
 
+
+
+    private function createVeXe($veTam, $hoa_don_id)
+    {
+        $chuyen_xe_id = $veTam->chuyen_xe_id;
+        $khach_hang_id = $veTam->khach_hang_id;
+        $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
+        $khachHang = KhachHang::find($khach_hang_id);
+
+        $tuyenXe = $chuyenXe->tuyen_xe;
+        $xe = $chuyenXe->xe;
+        $first_name = $khachHang->first_name;
+        $last_name = $khachHang->last_name;
+        $phone_number = $khachHang->phone_number;
+        $route_name = $tuyenXe->name;
+        $date = $chuyenXe->date;
+        $start_time = $chuyenXe->start_time;
+        $end_time = $chuyenXe->end_time;
+        $start_address = NhaXe::find($tuyenXe->start_address)->address;
+        $end_address = NhaXe::find($tuyenXe->end_address)->address;
+        $price = $chuyenXe->price;
+        $license = $xe->license;
+        $seat = $veTam->seat;
+
+        $veXe = [
+            "id" => Uuid::uuid4(),
+            "chuyen_xe_id" => $chuyen_xe_id,
+            "khach_hang_id" => $khach_hang_id,
+            "hoa_don_id" => $hoa_don_id,
+            "first_name" => $first_name,
+            "last_name" => $last_name,
+            "phone_number" => $phone_number,
+            "route_name" => $route_name,
+            "date" => $date,
+            "start_time" => $start_time,
+            "end_time" => $end_time,
+            "start_address" => $start_address,
+            "end_address" => $end_address,
+            "seat" => $seat,
+            "price" => $price,
+            "license" => $license,
+        ];
+
+        VeXe::create($veXe);
+
+        return $veXe['id'];
+    }
+
+
+    private function handleVeXe($data, $hoa_don_id)
+    {
+        $seats = explode(',', $data);
+        $res = [];
+        foreach ($seats as $seat) {
+
+            $veTam = VeTam::find($seat);
+            $ve_xe_id = $this->createVeXe($veTam, $hoa_don_id);
+            array_push($res, $ve_xe_id);
+            $veTam->delete();
+        }
+        return join(",", $res);
+    }
+
+
+    private function deleteVeTam($seats)
+    {
+        try {
+            $seats = explode(',', $seats);
+            foreach ($seats as $seat) {
+                $veTam = VeTam::find($seat);
+                $veTam->delete();
+            }
+        } catch (\Throwable $th) {
+        }
+    }
+
     public function get(Request $request)
     {
         $ip = $request->ip();
@@ -261,8 +287,8 @@ class ThanhToanController extends Controller
 
         // handle delete veTam
         if ($status != '00') {
-            return "fail";
-            // return redirect("http://localhost:3000?status=fail");
+            $this->deleteVeTam($request->input("seat"));
+            return redirect("http://localhost:3000?status=fail");
         }
 
         $giaoDich['vnp_Amount'] = $request->input('vnp_Amount');

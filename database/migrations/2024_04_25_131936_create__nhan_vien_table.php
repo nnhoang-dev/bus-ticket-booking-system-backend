@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('role');
             $table->boolean('status')->default(1);
             $table->timestamps();
+
             $table->index('phone_number');
             $table->index('email');
         });

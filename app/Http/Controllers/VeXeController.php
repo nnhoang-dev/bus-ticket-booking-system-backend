@@ -88,24 +88,28 @@ class VeXeController extends Controller
 
     private function updateChuyenXe($chuyenXeNew,  $seatNew, $chuyenXeOld, $seatOld)
     {
-        $seats = explode(",", $chuyenXeOld->seat);
-        $seatsNew = array_filter($seats, function ($seat) use ($seatOld) {
-            return $seat != $seatOld;
-        });
-        $seatsNew = join(",", $seatsNew);
-        $chuyenXeOld->update(["seat" => $seatsNew]);
+        try {
+            $seats = explode(",", $chuyenXeOld->seat);
+            $seatsNew = array_filter($seats, function ($seat) use ($seatOld) {
+                return $seat != $seatOld;
+            });
+            $seatsNew = join(",", $seatsNew);
+            $chuyenXeOld->update(["seat" => $seatsNew]);
 
+            $seatsNew = "";
+            if ($chuyenXeNew->seat == "") {
+                $seatsNew = $seatNew;
+            } else {
+                $seats = explode(",", $chuyenXeNew->seat);
+                array_push($seats, $seatNew);
+                $seatsNew = join(",", $seats);
+            }
 
-        $seatsNew = "";
-        if ($chuyenXeNew->seat == "") {
-            $seatsNew = $seatNew;
-        } else {
-            $seats = explode(",", $chuyenXeNew->seat);
-            array_push($seats, $seatNew);
-            $seatsNew = join(",", $seats);
+            $chuyenXeNew->update(["seat" => $seatsNew]);
+            return true;
+        } catch (\Throwable $th) {
+            return false;
         }
-        $chuyenXeNew->update(["seat" => $seatsNew]);
-        return $seatsNew;
     }
 
 
@@ -173,6 +177,8 @@ class VeXeController extends Controller
         $chuyen_xe_id = $data['chuyen_xe_id'];
         $chuyenXeOld = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($veXe->chuyen_xe_id);
         $chuyenXeNew = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
+        $seatOld = $veXe->seat;
+        $seatNew = $data['seat'];
 
         // Kiểm tra phải trùng tuyến xe
         if ($chuyenXeNew->tuyen_xe_id != $chuyenXeOld->tuyen_xe_id) {
@@ -180,19 +186,20 @@ class VeXeController extends Controller
         }
 
         // Kiểm tra ghế trống
-        if (in_array($data['seat'], explode(',', $chuyenXeNew->seat))) {
+        if (in_array($seatNew, explode(',', $chuyenXeNew->seat))) {
             return response()->json(['message' => 'Ghế đã được đặt'], 404);
         }
 
         // cập nhật thông tin vé xe
-        if ($this->updateVeXe($chuyenXeNew, $veXe, $data['seat'])) {
+        if ($this->updateVeXe($chuyenXeNew, $veXe, $seatNew) == false) {
             return response()->json(['message' => 'Lỗi ở phía server'], 500);
         }
 
         // cập nhật thông tin chuyến xe ( ghế ngồi )
-        if ($this->updateChuyenXe($chuyenXeNew, $data['seat'], $chuyenXeOld, $veXe->seat)) {
+        if ($this->updateChuyenXe($chuyenXeNew, $seatNew, $chuyenXeOld, $seatOld) == false) {
             return response()->json(['message' => 'Lỗi ở phía server'], 500);
         }
+
 
         return response()->json(['message' => 'Đổi vé thành công'], 200);
         try {

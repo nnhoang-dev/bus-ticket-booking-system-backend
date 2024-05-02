@@ -16,12 +16,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->date('date_of_birth');
-            $table->boolean('gender');
-            $table->string('address');
-            $table->boolean('status')->default(1);
+            $table->date('date_of_birth')->nullable();
+            $table->boolean('gender')->nullable();
+            $table->string('address')->nullable();
+            $table->boolean('status')->default(0);
             $table->timestamps();
+
             $table->index('phone_number');
+            $table->index('email');
         });
     }
 
