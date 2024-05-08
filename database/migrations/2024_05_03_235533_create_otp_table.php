@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->id();
-            $table->string('key')->unique();
-            $table->longText('value')->nullable();
-            $table->dateTime('expiration')->nullable();
-            $table->text('tags')->nullable();
+        Schema::create('otp', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+
+            $table->string('khach_hang_id');
+            $table->foreign('khach_hang_id')
+                ->references('id')
+                ->on('khach_hang');
+
+            $table->string('otp')->unique();
             $table->timestamps();
+
+            $table->index('otp');
         });
     }
 
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cache');
+        Schema::dropIfExists('otp');
     }
 };

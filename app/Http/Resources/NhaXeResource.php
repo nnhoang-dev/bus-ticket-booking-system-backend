@@ -20,6 +20,7 @@ class NhaXeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'city' => $this->city,
             'address' => $this->address,
             'phone_number' => $this->phone_number,
             'status' => $this->status,

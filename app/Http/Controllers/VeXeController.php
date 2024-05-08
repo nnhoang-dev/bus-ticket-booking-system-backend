@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ResultTicket;
 use App\Models\ChuyenXe;
 use App\Models\NhaXe;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
 use App\Models\VeXe;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schedule;
 
 class VeXeController extends Controller
@@ -24,6 +26,13 @@ class VeXeController extends Controller
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
+
+    // public function checkTicket(Request $request)
+    // {
+    //     $tickets = "asdsd,dasdsa";
+    //     Mail::to('nnhoanghd2004@gmail.com')->send(new ResultTicket($tickets));
+    //     return response()->json(['message' => 'Gửi mail thành công'], 200);
+    // }
 
 
     // public function store(Request $request)
@@ -71,15 +80,19 @@ class VeXeController extends Controller
     // }
 
 
-    public function getVeXeById(string $id)
+    public function getVeXeById(Request $request)
     {
+        $ve_id = $request->ve_id;
         try {
-            // $chuyenXe = VeXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($id);
-            $veXe = VeXe::find($id);
+            $veXe = VeXe::where('ve_id', $ve_id)->first();
             if (!$veXe) {
-                return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+                return response()->json(['message' => 'Không tồn tại vé xe'], 404);
             }
-            return response()->json($veXe, 200);
+            //check phone_number
+            if ($veXe->phone_number) {
+                return response()->json($veXe, 200);
+            }
+            return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
@@ -209,18 +222,18 @@ class VeXeController extends Controller
     }
 
 
-    public function destroy(string $id)
-    {
-        try {
-            $veXe = VeXe::find($id);
-            if (!$veXe) {
-                return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
-            }
+    // public function destroy(string $id)
+    // {
+    //     try {
+    //         $veXe = VeXe::find($id);
+    //         if (!$veXe) {
+    //             return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+    //         }
 
-            $veXe->delete();
-            return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
-        }
-    }
+    //         $veXe->delete();
+    //         return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
+    //     } catch (\Throwable $th) {
+    //         return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+    //     }
+    // }
 }

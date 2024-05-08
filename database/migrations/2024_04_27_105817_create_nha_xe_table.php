@@ -12,6 +12,7 @@ return new class extends Migration
         Schema::create('nha_xe', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->string('city');
             $table->string('address');
             $table->string('phone_number');
             $table->string('status')->default(1);

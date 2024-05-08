@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ConfirmAccount;
+use App\Mail\ResultTicket;
 use App\Models\ChuyenXe;
 use App\Models\GiaoDich;
 use App\Models\HoaDon;
@@ -18,14 +19,6 @@ use Ramsey\Uuid\Uuid;
 
 class ThanhToanController extends Controller
 {
-    public function testMail()
-    {
-        $otp = "12345";
-        $response = Mail::to('nnhoanghd2004@gmail.com')->send(new ConfirmAccount($otp));
-        dd($response);
-        // return $response;
-    }
-
     private function checkSeat($seat, $chuyenXe)
     {
         $seatRequest = explode(",", $seat);
@@ -201,11 +194,13 @@ class ThanhToanController extends Controller
         $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
         $khachHang = KhachHang::find($khach_hang_id);
 
+        $ve_id = mt_rand(10000000, 99999999);
         $tuyenXe = $chuyenXe->tuyen_xe;
         $xe = $chuyenXe->xe;
         $first_name = $khachHang->first_name;
         $last_name = $khachHang->last_name;
         $phone_number = $khachHang->phone_number;
+        $email = $khachHang->email;
         $route_name = $tuyenXe->name;
         $date = $chuyenXe->date;
         $start_time = $chuyenXe->start_time;
@@ -218,6 +213,7 @@ class ThanhToanController extends Controller
 
         $veXe = [
             "id" => Uuid::uuid4(),
+            "ve_id" => $ve_id,
             "chuyen_xe_id" => $chuyen_xe_id,
             "khach_hang_id" => $khach_hang_id,
             "hoa_don_id" => $hoa_don_id,
@@ -237,7 +233,7 @@ class ThanhToanController extends Controller
 
         VeXe::create($veXe);
 
-        return $veXe['id'];
+        return $veXe['ve_id'];
     }
 
 
@@ -272,13 +268,13 @@ class ThanhToanController extends Controller
     {
         $ip = $request->ip();
         if ($ip != '127.0.0.1') {
-            return redirect('http://localhost:3000?status=fail&message=ip');
+            return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
         $khach_hang_id = $request->input("khach_hang_id");
         $khachHang = KhachHang::find($khach_hang_id);
         if (!$khachHang) {
-            return redirect("http://localhost:3000?status=failmessage=KHachHang");
+            return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
         $giaoDich = [];
@@ -288,7 +284,7 @@ class ThanhToanController extends Controller
         // handle delete veTam
         if ($status != '00') {
             $this->deleteVeTam($request->input("seat"));
-            return redirect("http://localhost:3000?status=fail");
+            return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
         $giaoDich['vnp_Amount'] = $request->input('vnp_Amount');
@@ -320,8 +316,10 @@ class ThanhToanController extends Controller
 
         HoaDon::create($hoaDon);
 
+
         // solve VeTam
-        $ve_xe_id =  $this->handleVeXe($request->input('seat'), $hoaDon['id']);
-        return redirect("http://localhost:3000?status=success&ve_xe_id=$ve_xe_id");
+        $tickets =  $this->handleVeXe($request->input('seat'), $hoaDon['id']);
+        Mail::to($khachHang->email)->send(new ResultTicket($tickets));
+        return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=success");
     }
 }

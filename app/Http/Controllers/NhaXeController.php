@@ -28,6 +28,7 @@ class NhaXeController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
+                'city' => 'required|string',
                 'address' => 'required|string|unique:nha_xe,address',
                 'phone_number' => 'required|string|unique:nha_xe,phone_number',
             ]);
@@ -70,6 +71,8 @@ class NhaXeController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
+                'city' => 'required|string',
+
                 'address' => 'required|string|unique:nha_xe,address',
                 'phone_number' => 'required|string|unique:nha_xe,phone_number',
                 'status' => 'required|in:0,1',

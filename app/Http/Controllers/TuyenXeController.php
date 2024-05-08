@@ -29,7 +29,6 @@ class TuyenXeController extends Controller
             $validator = Validator::make($request->all(), [
                 'start_address' => 'required|exists:nha_xe,id',
                 'end_address' => 'required|exists:nha_xe,id',
-                'name' => 'required|string',
                 'time' => 'required|date_format:H:i:s',
                 'price' => 'required|integer'
             ]);
@@ -52,7 +51,9 @@ class TuyenXeController extends Controller
             // ) {
             //     return response()->json(["message" => "Tạo tuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
             // }
-
+            $start_address = NhaXe::find($data['start_address']);
+            $end_address = NhaXe::find($data['end_address']);
+            $data['name'] = $start_address->city . " - " . $end_address->city;
             $data['id'] = Uuid::uuid4()->toString();
             TuyenXe::create($data);
             return response()->json(['message' => 'Tạo tuyến xe thành công'], 201);

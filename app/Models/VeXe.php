@@ -13,12 +13,14 @@ class VeXe extends Model
     protected $keyType = 'string';
     protected $fillable = [
         "id",
+        've_id',
         "chuyen_xe_id",
         "hoa_don_id",
         "khach_hang_id",
         'first_name',
         'last_name',
         'phone_number',
+        'email',
         'route_name',
         'date',
         'start_time',

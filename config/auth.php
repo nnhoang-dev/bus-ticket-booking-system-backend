@@ -13,6 +13,10 @@ return [
     |
     */
 
+    // 'defaults' => [
+    //     'guard' => env('AUTH_GUARD', 'web'),
+    //     'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+    // ],
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
@@ -40,6 +44,19 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // 'api' => [
+        //     'driver' => 'jwt',
+        //     'provider' => 'users',
+        // ],
+        'khach_hang_api' => [
+            'driver' => 'jwt',
+            'provider' => 'khach_hang',
+        ],
+        'nhan_vien_api' => [
+            'driver' => 'jwt',
+            'provider' => 'nhan_vien',
+        ],
     ],
 
     /*
@@ -62,13 +79,16 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'nhan_vien' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\NhanVien::class,
+        ],
+        'khach_hang' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\KhachHang::class,
+        ],
     ],
 
     /*

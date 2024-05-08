@@ -14,6 +14,7 @@ class NhaXe extends Model
     protected $fillable = [
         'id',
         'name',
+        "city",
         'address',
         'phone_number',
         'status'

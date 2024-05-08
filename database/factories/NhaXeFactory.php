@@ -20,6 +20,9 @@ class NhaXeFactory extends Factory
         return [
             "id" => Uuid::uuid4()->toString(),
             "name" => $this->faker->name,
+            // "city" => "HCM",
+            "city" => "Sa Dec",
+            // "city" => $this->faker->name,
             "address" => $this->faker->address,
             "phone_number" => $this->faker->phoneNumber,
             'status' => $this->faker->randomElement(['1']),

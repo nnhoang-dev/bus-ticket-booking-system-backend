@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('ve_xe', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
+            $table->string('ve_id')->unique();
+
+
             $table->string('chuyen_xe_id');
             $table->foreign('chuyen_xe_id')
                 ->references('id')
@@ -32,6 +35,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone_number');
+            $table->string('email');
             $table->string('route_name');
             $table->date('date');
             $table->time('start_time');

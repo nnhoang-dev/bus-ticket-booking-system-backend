@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\KhachHangResource;
+use App\Mail\ConfirmAccount;
 use App\Models\KhachHang;
+use App\Models\OTP;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
@@ -48,7 +51,17 @@ class KhachHangController extends Controller
             $data['password'] = Hash::make($data['password']);
 
             KhachHang::create($data);
-            return response()->json(['message' => 'Tạo khách hàng thành công'], 201);
+            $otp = mt_rand(10000000, 99999999);
+            $khach_hang_id = Uuid::uuid4()->toString();
+            OTP::create([
+                'id' => $khach_hang_id,
+                'khach_hang_id' => $data['id'],
+                'otp' => $otp,
+            ]);
+            Mail::to($data['email'])->send(new ConfirmAccount($otp));
+            return response()->json([
+                'message' => 'Tạo khách hàng thành công'
+            ], 201);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
