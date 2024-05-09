@@ -80,7 +80,7 @@ class VeXeController extends Controller
     // }
 
 
-    public function getVeXeById(Request $request)
+    public function getVeXe(Request $request)
     {
         $ve_id = $request->ve_id;
         try {
@@ -97,9 +97,20 @@ class VeXeController extends Controller
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
+    public function getVeXeById(string $id)
+    {
+        try {
+            $veXe = VeXe::find($id);
+            if (!$veXe) {
+                return response()->json(['message' => 'Không tồn tại vé xe'], 404);
+            }
+            return response()->json(["veXe" => $veXe], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
 
-
-    private function updateChuyenXe($chuyenXeNew,  $seatNew, $chuyenXeOld, $seatOld)
+    private function updateChuyenXe($chuyen_xe_id,  $seatNew, $chuyenXeOld, $seatOld)
     {
         try {
             $seats = explode(",", $chuyenXeOld->seat);
@@ -108,6 +119,8 @@ class VeXeController extends Controller
             });
             $seatsNew = join(",", $seatsNew);
             $chuyenXeOld->update(["seat" => $seatsNew]);
+
+            $chuyenXeNew = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
 
             $seatsNew = "";
             if ($chuyenXeNew->seat == "") {
@@ -163,16 +176,16 @@ class VeXeController extends Controller
 
     public function changeVeXe(Request $request, string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'chuyen_xe_id' => 'required|string|exists:chuyen_xe,id',
-            'seat' => 'required|string'
-        ]);
-        if ($validator->stopOnFirstFailure()->fails()) {
-            $errors = $validator->errors();
-            foreach ($errors->all() as $error) {
-                return response()->json(["message" => $error], 400);
-            }
-        }
+        // $validator = Validator::make($request->all(), [
+        //     'chuyen_xe_id' => 'required|string|exists:chuyen_xe,id',
+        //     'seat' => 'required|string'
+        // ]);
+        // if ($validator->stopOnFirstFailure()->fails()) {
+        //     $errors = $validator->errors();
+        //     foreach ($errors->all() as $error) {
+        //         return response()->json(["message" => $error], 400);
+        //     }
+        // }
 
         $veXe = VeXe::find($id);
 
@@ -183,9 +196,9 @@ class VeXeController extends Controller
 
         // Kiểm tra không trùng chuyến xe
         $data = $request->all();
-        if ($veXe->chuyen_xe_id == $data['chuyen_xe_id']) {
-            return response()->json(['message' => 'Đổi trùng chuyến xe'], 404);
-        }
+        // if ($veXe->chuyen_xe_id == $data['chuyen_xe_id']) {
+        //     return response()->json(['message' => 'Đổi trùng chuyến xe'], 404);
+        // }
 
         $chuyen_xe_id = $data['chuyen_xe_id'];
         $chuyenXeOld = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($veXe->chuyen_xe_id);
@@ -205,12 +218,12 @@ class VeXeController extends Controller
 
         // cập nhật thông tin vé xe
         if ($this->updateVeXe($chuyenXeNew, $veXe, $seatNew) == false) {
-            return response()->json(['message' => 'Lỗi ở phía server'], 500);
+            return response()->json(['message' => 'Lỗi ở phía server cap nhat ve xe'], 500);
         }
 
         // cập nhật thông tin chuyến xe ( ghế ngồi )
-        if ($this->updateChuyenXe($chuyenXeNew, $seatNew, $chuyenXeOld, $seatOld) == false) {
-            return response()->json(['message' => 'Lỗi ở phía server'], 500);
+        if ($this->updateChuyenXe($chuyen_xe_id, $seatNew, $chuyenXeOld, $seatOld) == false) {
+            return response()->json(['message' => 'Lỗi ở phía server cap nhat chuyen xe'], 500);
         }
 
 
@@ -222,18 +235,18 @@ class VeXeController extends Controller
     }
 
 
-    // public function destroy(string $id)
-    // {
-    //     try {
-    //         $veXe = VeXe::find($id);
-    //         if (!$veXe) {
-    //             return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
-    //         }
+    public function destroy(string $id)
+    {
+        try {
+            $veXe = VeXe::find($id);
+            if (!$veXe) {
+                return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+            }
 
-    //         $veXe->delete();
-    //         return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
-    //     } catch (\Throwable $th) {
-    //         return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
-    //     }
-    // }
+            $veXe->delete();
+            return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
 }

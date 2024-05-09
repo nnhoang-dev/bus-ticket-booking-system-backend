@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
 class KhachHangFactory extends Factory
@@ -18,7 +19,7 @@ class KhachHangFactory extends Factory
         return [
             'id' => Uuid::uuid4()->toString(),
             'phone_number' => $this->faker->unique()->phoneNumber,
-            'password' => bcrypt('password'),
+            'password' => Hash::make("0909125679"),
             'email' => $this->faker->unique()->safeEmail,
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,

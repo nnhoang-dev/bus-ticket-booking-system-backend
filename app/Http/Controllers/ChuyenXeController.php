@@ -95,11 +95,8 @@ class ChuyenXeController extends Controller
                 'tuyen_xe_id' => 'required|string|exists:tuyen_xe,id',
                 'xe_id' => 'required|string|exists:xe,id',
                 'tai_xe_id' => 'required|string|exists:nhan_vien,id',
-                'price' => 'required|integer',
-                'seat' => 'required|string',
                 'date' => 'required|string',
                 'start_time' => 'required|date_format:H:i:s',
-                'price' => 'required|integer',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -112,6 +109,10 @@ class ChuyenXeController extends Controller
             $chuyenXe = ChuyenXe::find($id);
             if (!$chuyenXe) {
                 return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+            }
+
+            if ($chuyenXe->seat) {
+                return response()->json(['message' => 'Bạn không có quyền chỉnh sửa chuyến xe này'], 401);
             }
 
             $data = $request->all();
@@ -149,9 +150,23 @@ class ChuyenXeController extends Controller
             if (!$chuyenXe) {
                 return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
             }
+            if ($chuyenXe->seat) {
+                return response()->json(['message' => 'Bạn không có quyền xóa chuyến xe này'], 401);
+            }
 
             $chuyenXe->delete();
             return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
+
+
+    public function getChuyenXeWithTuyenXe()
+    {
+        try {
+            $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->where('tuyen_xe_id', request()->tuyen_xe_id)->get();
+            return response()->json(["chuyenXe" => $chuyenXe], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

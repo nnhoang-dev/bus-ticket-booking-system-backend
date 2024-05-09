@@ -22,7 +22,7 @@ class KhachHangAuthController extends Controller
         $validator = Validator::make(request()->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'phone_number' => 'required|string|regex:/^[0-9]{10,11}$/',
+            'phone_number' => 'required|string|unique:khach_hang,phone_number|regex:/^[0-9]{10,11}$/',
             'email' => 'required|email|unique:khach_hang,email',
             'password' => 'required|confirmed|min:6',
         ]);

@@ -72,6 +72,19 @@ class NhanVienController extends Controller
         }
     }
 
+    public function getAllNhanVienByRole(string $role)
+    {
+        try {
+            $nhanViens = NhanVien::where('role', $role)->get();
+            if (!$nhanViens) {
+                return response()->json(['message' => 'Không tồn tại nhân viên'], 404);
+            }
+            return NhanVienResource::collection($nhanViens);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
+
 
     public function update(Request $request, string $id)
     {
