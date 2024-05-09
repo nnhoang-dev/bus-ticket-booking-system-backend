@@ -86,13 +86,13 @@ class VeXeController extends Controller
         try {
             $veXe = VeXe::where('ve_id', $ve_id)->first();
             if (!$veXe) {
-                return response()->json(['message' => 'Không tồn tại vé xe'], 404);
+                return response()->json(['message' => 'Số điện thoại hoặc mã vé xe không chính xác'], 400);
             }
             //check phone_number
             if ($veXe->phone_number) {
                 return response()->json($veXe, 200);
             }
-            return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
+            return response()->json(['message' => 'Số điện thoại hoặc mã vé xe không chính xác'], 400);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

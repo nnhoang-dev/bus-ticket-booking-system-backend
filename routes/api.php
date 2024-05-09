@@ -1,12 +1,9 @@
 <?php
 
 use App\Http\Controllers\ChuyenXeController;
-use App\Http\Controllers\DatVeController;
-use App\Http\Controllers\HoaDonController;
 use App\Http\Controllers\KhachHangAuthController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\KhuyenMaiController;
 use App\Http\Controllers\NhanVienAuthController;
 use App\Http\Controllers\NhanVienController;
@@ -14,12 +11,9 @@ use App\Http\Controllers\TuyenXeController;
 use App\Http\Controllers\XeController;
 use App\Http\Controllers\NhaXeController;
 use App\Http\Controllers\ThanhToanController;
-use App\Http\Controllers\VeTamController;
 use App\Http\Controllers\VeXeController;
 
-use App\Http\Middleware\KhachHangMiddleware;
-use App\Http\Middleware\NhanVienMiddleware;
-use App\Http\Middleware\QuanLyAndVanHangMiddleware;
+
 
 Route::apiResource('xe', XeController::class);
 Route::apiResource('nha-xe', NhaXeController::class);
@@ -27,25 +21,7 @@ Route::apiResource('tuyen-xe', TuyenXeController::class);
 Route::apiResource('chuyen-xe', ChuyenXeController::class);
 Route::apiResource('khuyen-mai', KhuyenMaiController::class);
 
-Route::get('chuyen-xe-cung-tuyen', [ChuyenXeController::class, 'getChuyenXeWithTuyenXe']);
-
-
-
-// Route::get('check-result-ticket', [VeXeController::class, 'checkTicket']);
-
-// Route::group([
-//     'middleware' => 'api',
-//     'prefix' => 'employ
-// ], function ($router) {
-//     Route::post('/login', [AuthController::class, 'login']);
-//     Route::post('/change-password', [AuthController::class, 'changePassword']);
-//     // ... other routes for employees
-// });
-
-// Route::post('/khach-hang/dang-ky', [KhachHangAuthController::class, 'register']);
-
 Route::get('khach-hang/tra-cuu-ve', [VeXeController::class, 'getVeXe']);
-Route::get('nhan-vien/tra-cuu-ve/{id}', [VeXeController::class, 'getVeXeById']);
 Route::post('/khach-hang/dang-ky', [KhachHangAuthController::class, 'register']);
 Route::post('/khach-hang/xac-thuc-email', [KhachHangAuthController::class, 'confirmEmail']);
 Route::post('/khach-hang/gui-lai-ma-xac-thuc-email', [KhachHangAuthController::class, 'sendBackConfirmEmail']);
@@ -64,6 +40,8 @@ Route::group([
 });
 
 // Nhân viên
+Route::get('chuyen-xe-cung-tuyen', [ChuyenXeController::class, 'getChuyenXeWithTuyenXe']);
+Route::get('nhan-vien/tra-cuu-ve/{id}', [VeXeController::class, 'getVeXeById']);
 Route::post('/nhan-vien', [NhanVienController::class, 'store']);
 Route::post('/nhan-vien/dang-ky', [NhanVienAuthController::class, 'register']);
 Route::post('/nhan-vien/xac-thuc-email', [NhanVienAuthController::class, 'confirmEmail']);
