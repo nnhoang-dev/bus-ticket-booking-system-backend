@@ -9,23 +9,23 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('chuyen_xe', function (Blueprint $table) {
+        Schema::create('trips', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->string('tuyen_xe_id');
-            $table->foreign('tuyen_xe_id')
+            $table->string('route_id');
+            $table->foreign('route_id')
                 ->references('id')
-                ->on('tuyen_xe');
+                ->on('routes');
 
-            $table->string('xe_id');
-            $table->foreign('xe_id')
+            $table->string('bus_id');
+            $table->foreign('bus_id')
                 ->references('id')
-                ->on('xe');
+                ->on('buses');
 
-            $table->string('tai_xe_id');
-            $table->foreign('tai_xe_id')
+            $table->string('driver_id');
+            $table->foreign('driver_id')
                 ->references('id')
-                ->on('nhan_vien');
+                ->on('employees');
 
             $table->integer('price');
             $table->string('seat')->default("");
@@ -35,15 +35,15 @@ return new class extends Migration
             $table->boolean('status')->default(1);
             $table->timestamps();
 
-            $table->index('tuyen_xe_id');
-            $table->index('xe_id');
-            $table->index('tai_xe_id');
+            $table->index('route_id');
+            $table->index('bus_id');
+            $table->index('driver_id');
         });
     }
 
 
     public function down(): void
     {
-        Schema::dropIfExists('chuyen_xe');
+        Schema::dropIfExists('trips');
     }
 };

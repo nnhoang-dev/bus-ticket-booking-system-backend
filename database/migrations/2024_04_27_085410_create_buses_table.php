@@ -9,9 +9,9 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('khuyen_mai', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->integer('discount');
+        Schema::create('buses', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('license')->unique();
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
@@ -20,6 +20,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('khuyen_mai');
+        Schema::dropIfExists('buses');
     }
 };

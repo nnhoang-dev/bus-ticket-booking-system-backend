@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('hoa_don', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->string('khach_hang_id');
-            $table->foreign('khach_hang_id')
+            $table->string('customer_id');
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('khach_hang');
+                ->on('customers');
 
-            $table->string('giao_dich_id');
-            $table->foreign('giao_dich_id')
+            $table->string('transaction_id');
+            $table->foreign('transaction_id')
                 ->references('id')
-                ->on('giao_dich');
+                ->on('transactions');
 
             $table->string('phone_number');
             $table->string('email')->nullable();
@@ -37,6 +37,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('hoa_don');
+        Schema::dropIfExists('invoices');
     }
 };

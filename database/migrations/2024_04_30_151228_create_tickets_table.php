@@ -11,26 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ve_xe', function (Blueprint $table) {
+        Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->string('ve_id')->unique();
+            $table->string('ticket_id')->unique();
 
 
-            $table->string('chuyen_xe_id');
-            $table->foreign('chuyen_xe_id')
+            $table->string('trip_id');
+            $table->foreign('trip_id')
                 ->references('id')
-                ->on('chuyen_xe');
+                ->on('trips');
 
-            $table->string('khach_hang_id')->nullable();
-            $table->foreign('khach_hang_id')
+            $table->string('customer_id')->nullable();
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('khach_hang');
+                ->on('customers');
 
-            $table->string('hoa_don_id')->nullable();
-            $table->foreign('hoa_don_id')
+            $table->string('invoice_id')->nullable();
+            $table->foreign('invoice_id')
                 ->references('id')
-                ->on('hoa_don');
+                ->on('invoices');
 
             $table->string('first_name');
             $table->string('last_name');
@@ -54,6 +54,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ve_xe');
+        Schema::dropIfExists('tickets');
     }
 };

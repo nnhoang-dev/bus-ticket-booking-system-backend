@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('otp', function (Blueprint $table) {
+        Schema::create('otps', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->string('khach_hang_id');
-            $table->foreign('khach_hang_id')
+            $table->string('customer_id');
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('khach_hang');
+                ->on('customers');
 
-            $table->string('otp')->unique();
+            $table->string('otps')->unique();
             $table->timestamps();
 
-            $table->index('otp');
+            $table->index('otps');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('otp');
+        Schema::dropIfExists('otps');
     }
 };

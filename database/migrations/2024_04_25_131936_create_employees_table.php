@@ -9,17 +9,18 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('khach_hang', function (Blueprint $table) {
-            $table->string('id')->primary();
+        Schema::create('employees', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->string('phone_number')->unique();
             $table->string('password');
             $table->string('email')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->date('date_of_birth')->nullable();
-            $table->boolean('gender')->nullable();
-            $table->string('address')->nullable();
-            $table->boolean('status')->default(0);
+            $table->date('date_of_birth');
+            $table->boolean('gender');
+            $table->string('address');
+            $table->string('role');
+            $table->boolean('status')->default(1);
             $table->timestamps();
 
             $table->index('phone_number');
@@ -30,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('khach_hang');
+        Schema::dropIfExists('employees');
     }
 };

@@ -11,21 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ve_tam', function (Blueprint $table) {
+        Schema::create('temporary_tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('chuyen_xe_id');
-            $table->foreign('chuyen_xe_id')
+            $table->string('trip_id');
+            $table->foreign('trip_id')
                 ->references('id')
-                ->on('chuyen_xe');
+                ->on('trips');
 
-            $table->string('khach_hang_id')->nullable();
-            $table->foreign('khach_hang_id')
+            $table->string('customer_id')->nullable();
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('khach_hang');
+                ->on('customers');
             $table->integer('seat')->between(1, 36);
             $table->timestamps();
 
-            $table->unique(['chuyen_xe_id', 'seat'], 'unique_chuyen_xe_seat');
+            $table->unique(['trip_id', 'seat'], 'unique_trips_seat');
         });
     }
 
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ve_tam');
+        Schema::dropIfExists('temporary_tickets');
     }
 };

@@ -9,7 +9,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::create('nha_xe', function (Blueprint $table) {
+        Schema::create('bus_stations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('city');
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('nha_xe');
+        Schema::dropIfExists('bus_stations');
     }
 };
