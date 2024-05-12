@@ -10,6 +10,11 @@
 
 <body>
     <div>Mã xác thực tài khoản của bạn là: {{ $otp }}</div>
+    @if ($action == 'forgot-password')
+        <div>Mã này dùng để xác thực cho chức năng quên mật khẩu</div>
+    @else
+        <div>Mã này dùng để xác thực cho chức năng đăng ký tài khoản</div>
+    @endif
 </body>
 
 </html>

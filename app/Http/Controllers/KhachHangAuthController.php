@@ -27,7 +27,7 @@ class KhachHangAuthController extends Controller
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json(["message" => "Thông tin cung cấp không hợp lệ"], 400);
         }
 
         $khachHang = request()->all();
@@ -41,7 +41,7 @@ class KhachHangAuthController extends Controller
             'khach_hang_id' => $khachHang['id'],
             'otp' => $otp,
         ]);
-        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp));
+        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
 
         return response()->json(
             [
@@ -100,10 +100,12 @@ class KhachHangAuthController extends Controller
             'otp' => $otp,
         ]);
 
-        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp));
+        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
 
         return response()->json(['message' => 'Gửi OTP thành công'], 200);
     }
+
+
 
     /**
      * Get a JWT via given credentials.

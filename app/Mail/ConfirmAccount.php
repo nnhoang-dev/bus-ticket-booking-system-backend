@@ -13,10 +13,12 @@ class ConfirmAccount extends Mailable
 {
     use Queueable, SerializesModels;
     public $otp;
+    public $action;
 
-    public function __construct($otp)
+    public function __construct($otp, $action)
     {
         $this->otp = $otp;
+        $this->action = $action;
     }
 
     /**

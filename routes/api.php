@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChuyenXeController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\KhachHangAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,9 @@ Route::apiResource('tuyen-xe', TuyenXeController::class);
 Route::apiResource('chuyen-xe', ChuyenXeController::class);
 Route::apiResource('khuyen-mai', KhuyenMaiController::class);
 
+
+Route::post('/khach-hang/quen-mat-khau', [ForgotPasswordController::class, 'sendOTPForgotPassword']);
+Route::post('/khach-hang/quen-mat-khau/doi-mat-khau', [ForgotPasswordController::class, 'changePasswordForgotPassword']);
 Route::get('khach-hang/tra-cuu-ve', [VeXeController::class, 'getVeXe']);
 Route::post('/khach-hang/dang-ky', [KhachHangAuthController::class, 'register']);
 Route::post('/khach-hang/xac-thuc-email', [KhachHangAuthController::class, 'confirmEmail']);

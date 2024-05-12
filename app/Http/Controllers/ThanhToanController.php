@@ -110,7 +110,7 @@ class ThanhToanController extends Controller
 
         $seat = $this->order($veTam);
         if (!$seat) {
-            return response()->json("http://localhost:3000?status=fail", 400);
+            return response()->json(["message" => "Ghế đã được đặt, vui lòng reload lại trang web để được cập nhật"], 400);
         }
 
         $khach_hang_id = $data['khach_hang_id'];
@@ -119,7 +119,7 @@ class ThanhToanController extends Controller
         $quantity = $data['quantity'];
         $khachHang = KhachHang::find($khach_hang_id);
         if (!$khachHang) {
-            return response()->json("http://localhost:3000?status=fail", 400);
+            return response()->json(["message" => "Khách hàng không tồn tại"], 400);
         }
 
         $vnpay =  config("vnpay");
@@ -220,6 +220,7 @@ class ThanhToanController extends Controller
             "first_name" => $first_name,
             "last_name" => $last_name,
             "phone_number" => $phone_number,
+            "email" => $email,
             "route_name" => $route_name,
             "date" => $date,
             "start_time" => $start_time,
