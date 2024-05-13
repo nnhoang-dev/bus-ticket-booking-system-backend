@@ -4,12 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\NhaXe;
 
-class NhaXeResource extends JsonResource
+class InvoiceResource extends JsonResource
 {
-
-
     /**
      * Transform the resource into an array.
      *
@@ -19,13 +16,15 @@ class NhaXeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'city' => $this->city,
-            'address' => $this->address,
             'phone_number' => $this->phone_number,
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'discount' => $this->discount,
+            'price' => $this->price,
+            'quantity' => $this->quantity,
+            'total_price' => $this->total_price,
         ];
     }
 }

@@ -5,23 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HoaDon extends Model
+class BusStation extends Model
 {
     use HasFactory;
-    protected $table = 'hoa_don';
+    protected $table = 'bus_stations';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [
         'id',
-        'khach_hang_id',
-        'giao_dich_id',
+        'name',
+        "city",
+        'address',
         'phone_number',
-        'email',
-        'first_name',
-        'last_name',
-        'discount',
-        'price',
-        'quantity',
-        'total_price',
+        'status'
     ];
 }

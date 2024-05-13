@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ChuyenXe extends Model
+class Trip extends Model
 {
     use HasFactory;
-    protected $table = 'chuyen_xe';
+    protected $table = 'trips';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [
         "id",
-        "tuyen_xe_id",
-        "xe_id",
-        "tai_xe_id",
+        "route_id",
+        "bus_id",
+        "driver_id",
         'price',
         "seat",
         "date",
@@ -24,18 +24,18 @@ class ChuyenXe extends Model
         "status",
     ];
 
-    public function xe()
+    public function bus()
     {
-        return $this->belongsTo(Xe::class, 'xe_id');
+        return $this->belongsTo(Bus::class, 'bus_id');
     }
 
-    public function tuyen_xe()
+    public function route()
     {
-        return $this->belongsTo(TuyenXe::class, 'tuyen_xe_id');
+        return $this->belongsTo(Route::class, 'route_id');
     }
 
-    public function tai_xe()
+    public function driver()
     {
-        return $this->belongsTo(NhanVien::class, 'tai_xe_id');
+        return $this->belongsTo(Employee::class, 'driver_id');
     }
 }

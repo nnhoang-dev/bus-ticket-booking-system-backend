@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class VeXe extends Model
+class Ticket extends Model
 {
     use HasFactory;
-    protected $table = 've_xe';
+    protected $table = 'tickets';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [
         "id",
-        've_id',
-        "chuyen_xe_id",
-        "hoa_don_id",
-        "khach_hang_id",
+        'ticket_id',
+        "trip_id",
+        "invoice_id",
+        "customer_id",
         'first_name',
         'last_name',
         'phone_number',

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TuyenXeResource extends JsonResource
+class CustomerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,14 @@ class TuyenXeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'start_address' => $this->start_address,
-            'end_address' => $this->end_address,
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'date_of_birth' => $this->date_of_birth,
+            'gender' => $this->gender,
+            'address' => $this->address,
+            'phone_number' => $this->phone_number,
             'status' => $this->status,
-            'time' => $this->time,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

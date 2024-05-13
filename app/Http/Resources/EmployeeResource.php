@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HoaDonResource extends JsonResource
+class EmployeeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,15 +16,17 @@ class HoaDonResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'phone_number' => $this->phone_number,
             'email' => $this->email,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
+            'date_of_birth' => $this->date_of_birth,
+            'gender' => $this->gender,
+            'address' => $this->address,
+            'phone_number' => $this->phone_number,
+            'role' => $this->roles,
             'status' => $this->status,
-            'discount' => $this->discount,
-            'price' => $this->price,
-            'quantity' => $this->quantity,
-            'total_price' => $this->total_price,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

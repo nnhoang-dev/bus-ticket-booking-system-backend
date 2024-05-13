@@ -5,24 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NhaXe extends Model
+class Invoice extends Model
 {
     use HasFactory;
-    protected $table = 'nha_xe';
+    protected $table = 'invoices';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [
         'id',
-        'name',
-        "city",
-        'address',
+        'customer_id',
+        'transaction_id',
         'phone_number',
-        'status'
+        'email',
+        'first_name',
+        'last_name',
+        'discount',
+        'price',
+        'quantity',
+        'total_price',
     ];
-
-    // public function tuyen_xe()
-    // {
-    //     return $this->hasMany(TuyenXe::class);
-    //     // return $this->hasOne(TuyenXe::class, 'id');
-    // }
 }

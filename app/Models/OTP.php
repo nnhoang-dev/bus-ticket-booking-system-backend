@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OTP extends Model
 {
     use HasFactory;
-    protected $table = 'otp';
+    protected $table = 'otps';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [

@@ -4,9 +4,12 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\NhaXe;
 
-class KhachHangResource extends JsonResource
+class BusStationResource extends JsonResource
 {
+
+
     /**
      * Transform the resource into an array.
      *
@@ -16,11 +19,8 @@ class KhachHangResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'email' => $this->email,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'date_of_birth' => $this->date_of_birth,
-            'gender' => $this->gender,
+            'name' => $this->name,
+            'city' => $this->city,
             'address' => $this->address,
             'phone_number' => $this->phone_number,
             'status' => $this->status,

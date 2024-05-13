@@ -8,10 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class NhanVien extends Authenticatable implements JWTSubject
+class Employee extends Authenticatable implements JWTSubject
 {
     use HasFactory;
-    protected $table = 'nhan_vien';
+    protected $table = 'employees';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [

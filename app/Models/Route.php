@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\NhaXe;
 
-class TuyenXe extends Model
+class Route extends Model
 {
     use HasFactory;
-    protected $table = 'tuyen_xe';
+    protected $table = 'routes';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [
@@ -26,12 +26,12 @@ class TuyenXe extends Model
 
     public function start_address()
     {
-        return $this->belongsTo(NhaXe::class, 'start_address');
+        return $this->belongsTo(BusStation::class, 'start_address');
     }
 
     public function end_address()
     {
-        return $this->belongsTo(NhaXe::class, 'end_address');
+        return $this->belongsTo(BusStation::class, 'end_address');
     }
 
     // public function chuyen_xe()
