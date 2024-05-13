@@ -7,33 +7,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
-use App\Http\Resources\NhaXeResource;
-use App\Models\NhaXe;
+use App\Http\Resources\BusResource;
+use App\Models\Bus;
 
-class NhaXeController extends Controller
+class BusController extends Controller
 {
     public function index()
     {
         try {
-            $xe = NhaXe::all();
-            return NhaXeResource::collection($xe);
+            $xe = Bus::all();
+            return BusResource::collection($xe);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
-
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'city' => 'required|string',
-                'address' => 'required|string|unique:nha_xe,address',
-                'phone_number' => 'required|string|unique:nha_xe,phone_number',
+                'license' => 'required|string|unique:buses,license',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
-
                 $errors = $validator->errors();
                 foreach ($errors->all() as $error) {
                     return response()->json(["message" => $error], 400);
@@ -42,40 +37,31 @@ class NhaXeController extends Controller
 
             $data = $request->all();
             $data['id'] = Uuid::uuid4()->toString();
-
-
-            NhaXe::create($data);
-            return response()->json(['message' => 'Tạo nhà xe thành công'], 201);
+            Bus::create($data);
+            return response()->json(['message' => 'Thêm xe thành công'], 201);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
-
 
     public function show(string $id)
     {
         try {
-            $xe = NhaXe::find($id);
+            $xe = Bus::find($id);
             if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+                return response()->json(['message' => 'Không tồn tại xe'], 404);
             }
-            return new NhaXeResource($xe);
+            return new BusResource($xe);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
-
 
     public function update(Request $request, string $id)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'city' => 'required|string',
-
-                'address' => 'required|string|unique:nha_xe,address',
-                'phone_number' => 'required|string|unique:nha_xe,phone_number',
-                'status' => 'required|in:0,1',
+                'license' => 'string|unique:buses,license'
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -85,31 +71,32 @@ class NhaXeController extends Controller
             }
 
 
-            $xe = NhaXe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+            // find bus
+            $bus = Bus::find($id);
+            if (!$bus) {
+                return response()->json(['message' => 'Không tồn tại xe'], 404);
             }
 
             $data = $request->all();
 
-            $xe->update($data);
-            return response()->json(['message' => 'Cập nhật nhà xe thành công'], 200);
+            $bus->update($data);
+            return response()->json(['message' => 'Cập nhật xe thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
 
-    function destroy(string $id)
+    public function destroy(string $id)
     {
         try {
-            $xe = NhaXe::find($id);
+            $xe = Bus::find($id);
             if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+                return response()->json(['message' => 'Không tồn tại xe'], 404);
             }
 
             $xe->delete();
-            return response()->json(['message' => 'Xóa nhà xe thành công'], 200);
+            return response()->json(['message' => 'Xóa xe thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

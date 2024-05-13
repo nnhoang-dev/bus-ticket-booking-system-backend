@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ConfirmAccount;
-use App\Models\KhachHang;
+use App\Models\Customer;
 use App\Models\OTP;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,39 +14,40 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Mail;
 
-class KhachHangAuthController extends Controller
+class CustomerController extends Controller
 {
-    // Register a KhachHang.
+    // Register a Customer.
     public function register()
     {
         $validator = Validator::make(request()->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'phone_number' => 'required|string|unique:khach_hang,phone_number|regex:/^[0-9]{10,11}$/',
-            'email' => 'required|email|unique:khach_hang,email',
+            'phone_number' => 'required|string|unique:customers,phone_number|regex:/^[0-9]{10,11}$/',
+            'email' => 'required|email|unique:customers,email',
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
+            print_r(request()->all());
             return response()->json(["message" => "Thông tin cung cấp không hợp lệ"], 400);
         }
 
-        $khachHang = request()->all();
-        $khachHang['id'] = Uuid::uuid4();
-        $khachHang['password'] = Hash::make($khachHang['password']);
-        KhachHang::create($khachHang);
+        $customer = request()->all();
+        $customer['id'] = Uuid::uuid4();
+        $customer['password'] = Hash::make($customer['password']);
+        Customer::create($customer);
 
         $otp = mt_rand(10000000, 99999999);
         OTP::create([
             'id' => Uuid::uuid4()->toString(),
-            'khach_hang_id' => $khachHang['id'],
+            'customer_id' => $customer['id'],
             'otp' => $otp,
         ]);
-        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
+        Mail::to($customer['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
 
         return response()->json(
             [
                 "message" => "Tạo tài khoản khách hàng thành công",
-                "id" => $khachHang['id']
+                "id" => $customer['id']
             ],
             201
         );
@@ -56,14 +57,14 @@ class KhachHangAuthController extends Controller
     public function confirmEmail()
     {
         $validator = Validator::make(request()->all(), [
-            'khach_hang_id' => 'required|string|exists:khach_hang,id',
-            'otp' => 'required|string|exists:otp,otp',
+            'customer_id' => 'required|string|exists:customers,id',
+            'otp' => 'required|string|exists:otps,otp',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $otp = OTP::where('khach_hang_id', request()->khach_hang_id)
+        $otp = OTP::where('customer_id', request()->customer_id)
             ->where('otp', request()->otp)->first();
         if (!$otp) {
             return response()->json(['message' => 'Mã xác thực không chính xác'], 404);
@@ -75,8 +76,8 @@ class KhachHangAuthController extends Controller
         if (time() > $unixTimestamp) {
             return response()->json(['message' => 'OTP đã hết hạn'], 404);
         } else {
-            $khachHang = KhachHang::find(request()->khach_hang_id);
-            $khachHang->update(["status" => 1]);
+            $customer = Customer::find(request()->customer_id);
+            $customer->update(["status" => 1]);
             $otp->delete();
             return response()->json(['message' => 'Xác thực thành công'], 200);
         }
@@ -85,22 +86,22 @@ class KhachHangAuthController extends Controller
     public function sendBackConfirmEmail()
     {
         $validator = Validator::make(request()->all(), [
-            'khach_hang_id' => 'required|string|exists:khach_hang,id',
+            'customer_id' => 'required|string|exists:customers,id',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $khachHang = KhachHang::find(request()->khach_hang_id);
+        $customer = Customer::find(request()->customer_id);
 
         $otp = mt_rand(10000000, 99999999);
         OTP::create([
             'id' => Uuid::uuid4()->toString(),
-            'khach_hang_id' => request()->khach_hang_id,
+            'customer_id' => request()->customer_id,
             'otp' => $otp,
         ]);
 
-        Mail::to($khachHang['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
+        Mail::to($customer['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
 
         return response()->json(['message' => 'Gửi OTP thành công'], 200);
     }
@@ -116,11 +117,11 @@ class KhachHangAuthController extends Controller
     {
         $credentials = request(['phone_number', 'password']);
 
-        if (!$token = auth('khach_hang_api')->attempt($credentials)) {
+        if (!$token = auth('customer_api')->attempt($credentials)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         }
 
-        if (auth('khach_hang_api')->user()->status == 0) {
+        if (auth('customer_api')->user()->status == 0) {
             return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         }
 
@@ -146,10 +147,10 @@ class KhachHangAuthController extends Controller
             }
 
 
-            $khachHang = auth('khach_hang_api')->user();
-            if (Hash::check(request()->password_old, $khachHang->password)) {
-                $khachHang->password = request()->password_new;
-                $khachHang->save();
+            $customer = auth('customer_api')->user();
+            if (Hash::check(request()->password_old, $customer->password)) {
+                $customer->password = request()->password_new;
+                $customer->save();
                 return response()->json("Thay đổi mật khẩu thành công", 200);
             } else {
                 return response()->json("Thay đổi mật khẩu thất bại", 400);
@@ -169,7 +170,7 @@ class KhachHangAuthController extends Controller
     {
         try {
             //code...
-            return response()->json(["khachHang" => auth('khach_hang_api')->user()], 200);
+            return response()->json(["customer" => auth('customer_api')->user()], 200);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["error" => $th], 500);
@@ -183,7 +184,7 @@ class KhachHangAuthController extends Controller
      */
     public function logout()
     {
-        auth('khach_hang_api')->logout();
+        auth('customer_api')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -210,8 +211,8 @@ class KhachHangAuthController extends Controller
         return response()->json([
             'message' => 'Đăng nhập thành công',
             'token' => $token,
-            'infor' => auth('khach_hang_api')->user(),
-            'expires_in' => auth('khach_hang_api')->factory()->getTTL()
+            'infor' => auth('customer_api')->user(),
+            'expires_in' => auth('customer_api')->factory()->getTTL()
         ]);
     }
 }

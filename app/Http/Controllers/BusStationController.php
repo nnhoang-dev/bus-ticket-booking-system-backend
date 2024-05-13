@@ -7,28 +7,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
-use App\Http\Resources\XeResource;
-use App\Models\Xe;
+use App\Http\Resources\BusStationResource;
+use App\Models\BusStation;
 
-class XeController extends Controller
+class BusStationController extends Controller
 {
     public function index()
     {
         try {
-            $xe = Xe::all();
-            return XeResource::collection($xe);
+            $busStation = BusStation::all();
+            return BusStationResource::collection($busStation);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
+
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
+                'name' => 'required|string',
+                'city' => 'required|string',
+                'address' => 'required|string|unique:bus_stations,address',
+                'phone_number' => 'required|string|unique:bus_stations,phone_number',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
+
                 $errors = $validator->errors();
                 foreach ($errors->all() as $error) {
                     return response()->json(["message" => $error], 400);
@@ -37,32 +42,39 @@ class XeController extends Controller
 
             $data = $request->all();
             $data['id'] = Uuid::uuid4()->toString();
-            Xe::create($data);
-            return response()->json(['message' => 'Tạo xe thành công'], 201);
+
+
+            BusStation::create($data);
+            return response()->json(['message' => 'Tạo nhà xe thành công'], 201);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
+
     public function show(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $busStation = BusStation::find($id);
+            if (!$busStation) {
+                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
             }
-            return new XeResource($xe);
+            return new BusStationResource($busStation);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
+
 
     public function update(Request $request, string $id)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'license' => 'required|string|unique:xe,license',
-                'status' => 'required|in:0,1',
+                'name' => 'string',
+                'city' => 'string',
+
+                'address' => 'string',
+                'phone_number' => 'string',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -72,32 +84,31 @@ class XeController extends Controller
             }
 
 
-            // find xe
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $busStation = BusStation::find($id);
+            if (!$busStation) {
+                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
             }
 
             $data = $request->all();
 
-            $xe->update($data);
-            return response()->json(['message' => 'Cập nhật xe thành công'], 200);
+            $busStation->update($data);
+            return response()->json(['message' => 'Cập nhật nhà xe thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }
     }
 
 
-    public function destroy(string $id)
+    function destroy(string $id)
     {
         try {
-            $xe = Xe::find($id);
-            if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+            $busStation = BusStation::find($id);
+            if (!$busStation) {
+                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
             }
 
-            $xe->delete();
-            return response()->json(['message' => 'Xóa xe thành công'], 200);
+            $busStation->delete();
+            return response()->json(['message' => 'Xóa nhà xe thành công'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
         }

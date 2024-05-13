@@ -13,7 +13,7 @@ class OTP extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
-        'khach_hang_id',
+        'customer_id',
         'otp',
     ];
 }

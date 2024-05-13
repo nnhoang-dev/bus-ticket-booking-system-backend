@@ -2,44 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ConfirmAccount;
-use App\Models\NhanVien;
-use App\Models\OTP;
+use App\Http\Resources\EmployeeResource;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Providers\Auth\Illuminate;
 use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Mail;
 
-class NhanVienAuthController extends Controller
+class EmployeeController extends Controller
 {
-    // Register a NhanVien.
+    public function getAllEmployeeByRole(string $role)
+    {
+        try {
+            $nhanViens = Employee::where('role', $role)->get();
+            if (!$nhanViens) {
+                return response()->json(['message' => 'Không tồn tại nhân viên'], 404);
+            }
+            return EmployeeResource::collection($nhanViens);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
+    // Register a Employee.
+    public function store(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone_number' => 'required|string|unique:employees,phone_number',
+                'password' => 'required|string|min:6',
+                'email' => 'required|email|unique:employees,email',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'date_of_birth' => 'required|date',
+                'gender' => 'required|in:0,1',
+                'address' => 'required|string',
+                'role' => 'required|in:QL,VH,CS,KT,TX',
+
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+            $data = $request->all();
+            $data['id'] = Uuid::uuid4()->toString();
+            $data['password'] = Hash::make($data['password']);
+
+            Employee::create($data);
+            return response()->json(['message' => 'Tạo nhân viên thành công'], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        }
+    }
+
     public function register()
     {
         $validator = Validator::make(request()->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'phone_number' => 'required|string|regex:/^[0-9]{10,11}$/',
-            'email' => 'required|email|unique:nhan_vien,email',
+            'email' => 'required|email|unique:employees,email',
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $nhanVien = request()->all();
-        $nhanVien['id'] = Uuid::uuid4();
-        $nhanVien['password'] = Hash::make($nhanVien['password']);
-        NhanVien::create($nhanVien);
+        $employee = request()->all();
+        $employee['id'] = Uuid::uuid4();
+        $employee['password'] = Hash::make($employee['password']);
+        Employee::create($employee);
 
 
         return response()->json(
             [
                 "message" => "Tạo tài khoản khách hàng thành công",
-                "id" => $nhanVien['id']
+                "id" => $employee['id']
             ],
             201
         );
@@ -52,13 +94,14 @@ class NhanVienAuthController extends Controller
      */
     public function login()
     {
+        // return response()->json(["message" => "hehe"], 200);
         $credentials = request(['phone_number', 'password']);
 
-        if (!$token = auth('nhan_vien_api')->attempt($credentials)) {
+        if (!$token = auth('employee_api')->attempt($credentials)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         }
 
-        if (auth('nhan_vien_api')->user()->status == 0) {
+        if (auth('employee_api')->user()->status == 0) {
             return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         }
 
@@ -80,10 +123,10 @@ class NhanVienAuthController extends Controller
             }
 
 
-            $khachHang = auth('nhan_vien_api')->user();
-            if (Hash::check(request()->password_old, $khachHang->password)) {
-                $khachHang->password = request()->password_new;
-                $khachHang->save();
+            $employee = auth('employee_api')->user();
+            if (Hash::check(request()->password_old, $employee->password)) {
+                $employee->password = request()->password_new;
+                $employee->save();
                 return response()->json("Thay đổi mật khẩu thành công", 200);
             } else {
                 return response()->json("Thay đổi mật khẩu thất bại", 400);
@@ -102,7 +145,7 @@ class NhanVienAuthController extends Controller
     public function me()
     {
         try {
-            return response()->json(["nhanVien" => auth('nhan_vien_api')->user()], 200);
+            return response()->json(["employee" => auth('employee_api')->user()], 200);
         } catch (\Throwable $th) {
             return response()->json(["error" => $th], 500);
         }
@@ -115,7 +158,7 @@ class NhanVienAuthController extends Controller
      */
     public function logout()
     {
-        auth('nhan_vien_api')->logout();
+        auth('employee_api')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -142,8 +185,8 @@ class NhanVienAuthController extends Controller
         return response()->json([
             'message' => 'Đăng nhập thành công',
             'token' => $token,
-            'nhanVien' => auth('nhan_vien_api')->user(),
-            'expires_in' => auth('nhan_vien_api')->factory()->getTTL()
+            'employee' => auth('employee_api')->user(),
+            'expires_in' => auth('employee_api')->factory()->getTTL()
         ]);
     }
 }

@@ -11,7 +11,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 class Customer extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
-    protected $table = 'customer';
+    protected $table = 'customers';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     protected $fillable = [

@@ -49,13 +49,13 @@ return [
         //     'driver' => 'jwt',
         //     'provider' => 'users',
         // ],
-        'khach_hang_api' => [
+        'customer_api' => [
             'driver' => 'jwt',
-            'provider' => 'khach_hang',
+            'provider' => 'customer',
         ],
-        'nhan_vien_api' => [
+        'employee_api' => [
             'driver' => 'jwt',
-            'provider' => 'nhan_vien',
+            'provider' => 'employee',
         ],
     ],
 
@@ -81,13 +81,13 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-        'nhan_vien' => [
+        'employee' => [
             'driver' => 'eloquent',
-            'model' => App\Models\NhanVien::class,
+            'model' => App\Models\Employee::class,
         ],
-        'khach_hang' => [
+        'customer' => [
             'driver' => 'eloquent',
-            'model' => App\Models\KhachHang::class,
+            'model' => App\Models\Customer::class,
         ],
     ],
 
