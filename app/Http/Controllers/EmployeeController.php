@@ -80,10 +80,15 @@ class EmployeeController extends Controller
                 return response()->json(['message' => 'Not exist employee'], 404);
             }
 
+            if ($employee->role == 'manager') {
+                return response()->json(['message' => 'You do not have permission to delete manager'], 404);
+            }
+
+
             $employee->delete();
             return response()->json(['message' => 'Delete employee successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+            return response()->json(['message' => 'Employee deletion is not allowed because they have assigned tasks', "exception" => $th], 500);
         }
     }
 
@@ -137,6 +142,35 @@ class EmployeeController extends Controller
         }
     }
 
+    public function updateMyAccount(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'date_of_birth' => 'required|date',
+                'gender' => 'required|in:0,1',
+                'address' => 'required|string',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+
+            $employee =  auth('employee_api')->user();
+            $data = $request->all();
+
+            $employee->update($data);
+            return response()->json(['message' => 'Update employee successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
+
     // public function register()
     // {
     //     $validator = Validator::make(request()->all(), [
@@ -189,11 +223,10 @@ class EmployeeController extends Controller
 
     public function changePassword()
     {
-        // echo "hehe";
         try {
             $validator = Validator::make(request()->all(), [
-                'password_old' => 'required|string',
-                'password_new' => 'required|confirmed',
+                'current_password' => 'required|string',
+                'new_password' => 'required|confirmed',
             ]);
 
             if ($validator->fails()) {
@@ -202,13 +235,14 @@ class EmployeeController extends Controller
 
 
             $employee = auth('employee_api')->user();
-            if (Hash::check(request()->password_old, $employee->password)) {
-                $employee->password = request()->password_new;
+            if (Hash::check(request()->current_password, $employee->password)) {
+                $employee->password = request()->new_password;
                 $employee->save();
-                return response()->json("Change password successfully", 200);
+                return response()->json(['message' => 'Change password successfully'], 200);
             } else {
-                return response()->json("Failed to change password", 400);
+                return response()->json(['message' => 'Failed to change password'], 400);
             }
+            return response()->json(['message' => $employee], 200);
         } catch (\Throwable $th) {
             return response()->json("Server error", 500);
         }

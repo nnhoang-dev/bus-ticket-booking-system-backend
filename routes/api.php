@@ -63,7 +63,8 @@ Route::group([
     Route::put('chance-ticket/{id}', [TicketController::class, 'changeTicket']);
     Route::delete('cancel-ticket/{id}', [TicketController::class, 'destroy']);
 
-    Route::post('doi-mat-khau', [EmployeeController::class, 'changePassword']);
+    Route::put('update-my-account', [EmployeeController::class, 'updateMyAccount']);
+    Route::put('change-password', [EmployeeController::class, 'changePassword']);
     Route::get('logout', [EmployeeController::class, 'logout']);
     Route::get('me', [EmployeeController::class, 'me']);
 });
