@@ -15,12 +15,14 @@ use App\Http\Controllers\TicketController;
 
 
 // Customer
-Route::post('/customer/quen-mat-khau', [ForgotPasswordController::class, 'sendOTPForgotPassword']);
-Route::post('/customer/quen-mat-khau/doi-mat-khau', [ForgotPasswordController::class, 'changePasswordForgotPassword']);
-Route::get('/customer/lookup-ticket', [TicketController::class, 'lookupTicket']);
-Route::post('/customer/register', [CustomerController::class, 'register']);
+Route::post('/customer/forgot-password', [ForgotPasswordController::class, 'sendOTPForgotPassword']);
+Route::put('/customer/forgot-password/change-password', [ForgotPasswordController::class, 'changePasswordForgotPassword']);
+
 Route::post('/customer/confirm-email', [CustomerController::class, 'confirmEmail']);
 Route::post('/customer/resend-confirm-email', [CustomerController::class, 'resendComfirmEmail']);
+
+Route::get('/customer/lookup-ticket', [TicketController::class, 'lookupTicket']);
+Route::post('/customer/register', [CustomerController::class, 'register']);
 Route::post('/customer/login', [CustomerController::class, 'login']);
 Route::get('/customer/payment', [ThanhToanController::class, 'get']);
 
