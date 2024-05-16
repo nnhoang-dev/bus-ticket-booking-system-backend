@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ConfirmAccount;
 use App\Mail\ResultTicket;
-use App\Models\ChuyenXe;
-use App\Models\GiaoDich;
-use App\Models\HoaDon;
-use App\Models\KhachHang;
-use App\Models\NhaXe;
-use App\Models\TuyenXe;
-use App\Models\VeTam;
-use App\Models\VeXe;
+use App\Models\Customer;
+use App\Models\Bus;
+use App\Models\BusStation;
+use App\Models\Invoice;
+use App\Models\TemporaryTicket;
+use App\Models\Ticket;
+use App\Models\Transaction;
+use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -19,10 +18,10 @@ use Ramsey\Uuid\Uuid;
 
 class ThanhToanController extends Controller
 {
-    private function checkSeat($seat, $chuyenXe)
+    private function checkSeat($seat, $trip)
     {
         $seatRequest = explode(",", $seat);
-        $seatChuyenXe = explode(",", $chuyenXe['seat']);
+        $seatTrip = explode(",", $trip['seat']);
 
         foreach ($seatRequest as $seat) {
             if ((!is_numeric($seat)) || (intval($seat) < 1) || (intval($seat) > 36)) {
@@ -31,7 +30,7 @@ class ThanhToanController extends Controller
         }
 
         foreach ($seatRequest as $seat) {
-            if (in_array($seat, $seatChuyenXe)) {
+            if (in_array($seat, $seatTrip)) {
                 return false;
             }
         }
@@ -39,27 +38,27 @@ class ThanhToanController extends Controller
     }
 
 
-    private function createVeTam($data, $chuyenXe)
+    private function createTemporaryTicket($data, $trip)
     {
         $seats = explode(",", $data['seat']);
         $res = "";
         foreach ($seats as $seat) {
-            $veTam = $data;
-            $veTam['seat'] = $seat;
-            $veTam['id'] = Uuid::uuid4();
-            VeTam::create($veTam);
-            $res = $res . $veTam['id'] . ",";
+            $temporaryTicket = $data;
+            $temporaryTicket['seat'] = $seat;
+            $temporaryTicket['id'] = Uuid::uuid4();
+            TemporaryTicket::create($temporaryTicket);
+            $res = $res . $temporaryTicket['id'] . ",";
         }
         $res = substr($res, 0, -1);
 
-        $seat = $chuyenXe['seat'];
+        $seat = $trip['seat'];
         if ($seat == "") {
             $seat = $seat . $data['seat'];
         } else {
             $seat = $seat . "," . $data['seat'];
         }
 
-        $chuyenXe->update([
+        $trip->update([
             "seat" => $seat,
         ]);
 
@@ -71,25 +70,24 @@ class ThanhToanController extends Controller
     {
         try {
             $validator = Validator::make($request, [
-                'chuyen_xe_id' => 'required|string|exists:chuyen_xe,id',
-                'khach_hang_id' => 'required|string|exists:khach_hang,id',
+                'trip_id' => 'required|string|exists:trips,id',
+                'customer_id' => 'required|string|exists:customers,id',
                 'seat' => 'required',
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
-                return null;
+                return 'validate';
             }
 
             $data = $request;
-            $chuyenXe = ChuyenXe::find($data['chuyen_xe_id']);
-
-            if ($this->checkSeat($data['seat'], $chuyenXe) == false) {
-                return null;
+            $trip = Trip::find($data['trip_id']);
+            if ($this->checkSeat($data['seat'], $trip) == false) {
+                return 'checkSeat';
             }
 
-            $res = $this->createVeTam($data, $chuyenXe);
+            $res = $this->createTemporaryTicket($data, $trip);
             return $res;
         } catch (\Throwable $th) {
-            return null;
+            return 'catch';
         }
     }
 
@@ -102,23 +100,24 @@ class ThanhToanController extends Controller
 
         $data = $request->all();
 
-        $veTam = [
-            "chuyen_xe_id" => $data['chuyen_xe_id'],
-            "khach_hang_id" => $data['khach_hang_id'],
+        $temporaryTicket = [
+            "trip_id" => $data['trip_id'],
+            "customer_id" => $data['customer_id'],
             "seat" => $data['seat']
         ];
 
-        $seat = $this->order($veTam);
+        $seat = $this->order($temporaryTicket);
+        // return response()->json(["message" => $seat], 200);
         if (!$seat) {
             return response()->json(["message" => "Ghế đã được đặt, vui lòng reload lại trang web để được cập nhật"], 400);
         }
 
-        $khach_hang_id = $data['khach_hang_id'];
+        $customer_id = $data['customer_id'];
         $discount = $data['discount'];
         $price = $data['price'];
         $quantity = $data['quantity'];
-        $khachHang = KhachHang::find($khach_hang_id);
-        if (!$khachHang) {
+        $customer = Customer::find($customer_id);
+        if (!$customer) {
             return response()->json(["message" => "Khách hàng không tồn tại"], 400);
         }
 
@@ -128,7 +127,7 @@ class ThanhToanController extends Controller
         $vnp_HashSecret = $vnpay['vnp_HashSecret'];
         $vnp_Url = $vnpay['vnp_Url'];
         $vnp_Returnurl = $vnpay['vnp_Returnurl'] .
-            "?khach_hang_id=$khach_hang_id&discount=$discount&price=$price&quantity=$quantity
+            "?customer_id=$customer_id&discount=$discount&price=$price&quantity=$quantity
             &seat=$seat";
 
         $vnp_TxnRef = rand(1, 10000); //Mã giao dịch thanh toán tham chiếu của merchant";
@@ -187,36 +186,36 @@ class ThanhToanController extends Controller
 
 
 
-    private function createVeXe($veTam, $hoa_don_id)
+    private function createTicket($temporaryTicket, $invoice_id)
     {
-        $chuyen_xe_id = $veTam->chuyen_xe_id;
-        $khach_hang_id = $veTam->khach_hang_id;
-        $chuyenXe = ChuyenXe::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($chuyen_xe_id);
-        $khachHang = KhachHang::find($khach_hang_id);
+        $trip_id = $temporaryTicket->trip_id;
+        $customer_id = $temporaryTicket->customer_id;
+        $trip = Trip::with(['route.start_address', 'route.end_address', 'bus'])->find($trip_id);
+        $customer = Customer::find($customer_id);
 
-        $ve_id = mt_rand(10000000, 99999999);
-        $tuyenXe = $chuyenXe->tuyen_xe;
-        $xe = $chuyenXe->xe;
-        $first_name = $khachHang->first_name;
-        $last_name = $khachHang->last_name;
-        $phone_number = $khachHang->phone_number;
-        $email = $khachHang->email;
-        $route_name = $tuyenXe->name;
-        $date = $chuyenXe->date;
-        $start_time = $chuyenXe->start_time;
-        $end_time = $chuyenXe->end_time;
-        $start_address = NhaXe::find($tuyenXe->start_address)->address;
-        $end_address = NhaXe::find($tuyenXe->end_address)->address;
-        $price = $chuyenXe->price;
-        $license = $xe->license;
-        $seat = $veTam->seat;
+        $ticket_id = mt_rand(10000000, 99999999);
+        $route = $trip->route;
+        $bus = $trip->bus;
+        $first_name = $customer->first_name;
+        $last_name = $customer->last_name;
+        $phone_number = $customer->phone_number;
+        $email = $customer->email;
+        $route_name = $route->name;
+        $date = $trip->date;
+        $start_time = $trip->start_time;
+        $end_time = $trip->end_time;
+        $start_address = BusStation::find($route->start_address)->address;
+        $end_address = BusStation::find($route->end_address)->address;
+        $price = $trip->price;
+        $license = $bus->license;
+        $seat = $temporaryTicket->seat;
 
-        $veXe = [
+        $ticket = [
             "id" => Uuid::uuid4(),
-            "ve_id" => $ve_id,
-            "chuyen_xe_id" => $chuyen_xe_id,
-            "khach_hang_id" => $khach_hang_id,
-            "hoa_don_id" => $hoa_don_id,
+            "ticket_id" => $ticket_id,
+            "trip_id" => $trip_id,
+            "customer_id" => $customer_id,
+            "invoice_id" => $invoice_id,
             "first_name" => $first_name,
             "last_name" => $last_name,
             "phone_number" => $phone_number,
@@ -232,34 +231,34 @@ class ThanhToanController extends Controller
             "license" => $license,
         ];
 
-        VeXe::create($veXe);
+        // print_r($ticket);
+        Ticket::create($ticket);
 
-        return $veXe['ve_id'];
+        return $ticket['ticket_id'];
     }
 
 
-    private function handleVeXe($data, $hoa_don_id)
+    private function handleTicket($data, $invoice_id)
     {
         $seats = explode(',', $data);
         $res = [];
         foreach ($seats as $seat) {
-
-            $veTam = VeTam::find($seat);
-            $ve_xe_id = $this->createVeXe($veTam, $hoa_don_id);
-            array_push($res, $ve_xe_id);
-            $veTam->delete();
+            $temporaryTicket = TemporaryTicket::find($seat);
+            $ticket_id = $this->createTicket($temporaryTicket, $invoice_id);
+            array_push($res, $ticket_id);
+            $temporaryTicket->delete();
         }
         return join(",", $res);
     }
 
 
-    private function deleteVeTam($seats)
+    private function deleteTemporaryTicket($seats)
     {
         try {
             $seats = explode(',', $seats);
             foreach ($seats as $seat) {
-                $veTam = VeTam::find($seat);
-                $veTam->delete();
+                $temporaryTicket = TemporaryTicket::find($seat);
+                $temporaryTicket->delete();
             }
         } catch (\Throwable $th) {
         }
@@ -272,55 +271,55 @@ class ThanhToanController extends Controller
             return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
-        $khach_hang_id = $request->input("khach_hang_id");
-        $khachHang = KhachHang::find($khach_hang_id);
-        if (!$khachHang) {
+        $customer_id = $request->input("customer_id");
+        $customer = Customer::find($customer_id);
+        if (!$customer) {
             return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
-        $giaoDich = [];
-        $giaoDich['vnp_TransactionStatus'] = $request->input('vnp_TransactionStatus');
-        $status = $giaoDich['vnp_TransactionStatus'];
+        $transaction = [];
+        $transaction['vnp_TransactionStatus'] = $request->input('vnp_TransactionStatus');
+        $status = $transaction['vnp_TransactionStatus'];
 
         // handle delete veTam
         if ($status != '00') {
-            $this->deleteVeTam($request->input("seat"));
+            $this->deleteTemporaryTicket($request->input("seat"));
             return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=failure");
         }
 
-        $giaoDich['vnp_Amount'] = $request->input('vnp_Amount');
-        $giaoDich['vnp_BankCode'] = $request->input('vnp_BankCode');
-        $giaoDich['vnp_CardType'] = $request->input('vnp_CardType');
-        $giaoDich['vnp_OrderInfo'] = $request->input('vnp_OrderInfo');
-        $giaoDich['vnp_PayDate'] = $request->input('vnp_PayDate');
-        $giaoDich['vnp_ResponseCode'] = $request->input('vnp_ResponseCode');
-        $giaoDich['vnp_TmnCode'] = $request->input('vnp_TmnCode');
-        $giaoDich['vnp_TransactionNo'] = $request->input('vnp_TransactionNo');
-        $giaoDich['vnp_TxnRef'] = $request->input('vnp_TxnRef');
-        $giaoDich['id'] = Uuid::uuid4();
+        $transaction['vnp_Amount'] = $request->input('vnp_Amount');
+        $transaction['vnp_BankCode'] = $request->input('vnp_BankCode');
+        $transaction['vnp_CardType'] = $request->input('vnp_CardType');
+        $transaction['vnp_OrderInfo'] = $request->input('vnp_OrderInfo');
+        $transaction['vnp_PayDate'] = $request->input('vnp_PayDate');
+        $transaction['vnp_ResponseCode'] = $request->input('vnp_ResponseCode');
+        $transaction['vnp_TmnCode'] = $request->input('vnp_TmnCode');
+        $transaction['vnp_TransactionNo'] = $request->input('vnp_TransactionNo');
+        $transaction['vnp_TxnRef'] = $request->input('vnp_TxnRef');
+        $transaction['id'] = Uuid::uuid4();
 
-        GiaoDich::create($giaoDich);
+        Transaction::create($transaction);
 
         // solve HoaDon
-        $hoaDon = [];
-        $hoaDon['id'] = Uuid::uuid4();
-        $hoaDon['khach_hang_id'] = $khach_hang_id;
-        $hoaDon['giao_dich_id'] = $giaoDich['id'];
-        $hoaDon['phone_number'] = $khachHang->phone_number;
-        $hoaDon['email'] = $khachHang->email;
-        $hoaDon['first_name'] = $khachHang->first_name;
-        $hoaDon['last_name'] = $khachHang->last_name;
-        $hoaDon['discount'] = $request->input('discount');
-        $hoaDon['price'] = $request->input('price');
-        $hoaDon['quantity'] = $request->input('quantity');
-        $hoaDon['total_price'] = $giaoDich['vnp_Amount'];
+        $invoice = [];
+        $invoice['id'] = Uuid::uuid4();
+        $invoice['customer_id'] = $customer_id;
+        $invoice['transaction_id'] = $transaction['id'];
+        $invoice['phone_number'] = $customer->phone_number;
+        $invoice['email'] = $customer->email;
+        $invoice['first_name'] = $customer->first_name;
+        $invoice['last_name'] = $customer->last_name;
+        $invoice['discount'] = $request->input('discount');
+        $invoice['price'] = $request->input('price');
+        $invoice['quantity'] = $request->input('quantity');
+        $invoice['total_price'] = $transaction['vnp_Amount'];
 
-        HoaDon::create($hoaDon);
+        Invoice::create($invoice);
 
 
         // solve VeTam
-        $tickets =  $this->handleVeXe($request->input('seat'), $hoaDon['id']);
-        Mail::to($khachHang->email)->send(new ResultTicket($tickets));
+        $tickets =  $this->handleTicket($request->input('seat'), $invoice['id']);
+        Mail::to($customer->email)->send(new ResultTicket($tickets));
         return redirect(env("REACT_URL", "http://localhost:3000/") . "ket-qua-dat-ve?status=success");
     }
 }

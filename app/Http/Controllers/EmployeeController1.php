@@ -18,7 +18,7 @@ use Ramsey\Uuid\Uuid;
 //             $nhanViens = Employee::all();
 //             return EmployeeResource::collection($nhanViens);
 //         } catch (\Throwable $th) {
-//             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+//             return response()->json(['message' => 'Server error', "exception" => $th], 500);
 //         }
 //     }
 
@@ -29,11 +29,11 @@ use Ramsey\Uuid\Uuid;
 //         try {
 //             $nhanVien = Employee::find($id);
 //             if (!$nhanVien) {
-//                 return response()->json(['message' => 'Không tồn tại nhân viên'], 404);
+//                 return response()->json(['message' => 'Not exist nhân viên'], 404);
 //             }
 //             return new EmployeeResource($nhanVien);
 //         } catch (\Throwable $th) {
-//             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+//             return response()->json(['message' => 'Server error', "exception" => $th], 500);
 //         }
 //     }
 
@@ -51,7 +51,7 @@ use Ramsey\Uuid\Uuid;
 //                     'date_of_birth' => 'required|date',
 //                     'gender' => 'required|in:0,1',
 //                     'address' => 'required|string',
-//                     'role' => 'required|in:QL,VH,CS,KT,TX',
+//                     'role' => 'required|in:manager|operator|customer_service|accountant|driver',
 //                     'status' => 'in:0,1',
 //                 ]);
 //             } else if ($request->isMethod('PATCH')) {
@@ -75,7 +75,7 @@ use Ramsey\Uuid\Uuid;
 
 //             $nhanVien = Employee::find($id);
 //             if (!$nhanVien) {
-//                 return response()->json(['message' => 'Không tồn tại nhân viên'], 404);
+//                 return response()->json(['message' => 'Not exist nhân viên'], 404);
 //             }
 
 //             $data = $request->all();
@@ -87,7 +87,7 @@ use Ramsey\Uuid\Uuid;
 //             $nhanVien->update($data);
 //             return response()->json(['message' => 'Cập nhật nhân viên thành công'], 200);
 //         } catch (\Throwable $th) {
-//             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+//             return response()->json(['message' => 'Server error', "exception" => $th], 500);
 //         }
 //     }
 
@@ -97,13 +97,13 @@ use Ramsey\Uuid\Uuid;
 //         try {
 //             $nhanVien = Employee::find($id);
 //             if (!$nhanVien) {
-//                 return response()->json(['message' => 'Không tồn tại nhân viên'], 404);
+//                 return response()->json(['message' => 'Not exist nhân viên'], 404);
 //             }
 
 //             $nhanVien->delete();
 //             return response()->json(['message' => 'Xóa nhân viên thành công'], 200);
 //         } catch (\Throwable $th) {
-//             return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+//             return response()->json(['message' => 'Server error', "exception" => $th], 500);
 //         }
 //     }
 // }

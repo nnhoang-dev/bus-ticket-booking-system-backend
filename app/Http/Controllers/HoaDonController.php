@@ -18,7 +18,7 @@ class HoaDonController extends Controller
             $hoaDon = HoaDon::all();
             return HoaDonResource::collection($hoaDon);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -78,7 +78,7 @@ class HoaDonController extends Controller
         //     HoaDon::create($data);
         //     return response()->json(['message' => 'Tạo hóa đơn thành công'], 201);
         // } catch (\Throwable $th) {
-        //     return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+        //     return response()->json(['message' => 'Server error', "exception" => $th], 500);
         // }
     }
 
@@ -87,11 +87,11 @@ class HoaDonController extends Controller
         try {
             $hoaDon = HoaDon::find($id);
             if (!$hoaDon) {
-                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
+                return response()->json(['message' => 'Not exist hóa đơn'], 404);
             }
             return new HoaDonResource($hoaDon);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -125,7 +125,7 @@ class HoaDonController extends Controller
             // find hóa đơn
             $hoaDon = HoaDon::find($id);
             if (!$hoaDon) {
-                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
+                return response()->json(['message' => 'Not exist hóa đơn'], 404);
             }
 
             // tinh tong gia
@@ -138,7 +138,7 @@ class HoaDonController extends Controller
             $hoaDon->update($data);
             return response()->json(['message' => 'Cập nhật hóa đơn thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -149,13 +149,13 @@ class HoaDonController extends Controller
         try {
             $hoaDon = HoaDon::find($id);
             if (!$hoaDon) {
-                return response()->json(['message' => 'Không tồn tại hóa đơn'], 404);
+                return response()->json(['message' => 'Not exist hóa đơn'], 404);
             }
 
             $hoaDon->delete();
             return response()->json(['message' => 'Xóa hóa đơn thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

@@ -19,10 +19,10 @@ return new class extends Migration
                 ->references('id')
                 ->on('customers');
 
-            $table->string('otps')->unique();
+            $table->string('otp')->unique();
             $table->timestamps();
 
-            $table->index('otps');
+            $table->index('otp');
         });
     }
 

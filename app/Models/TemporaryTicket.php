@@ -13,8 +13,8 @@ class TemporaryTicket extends Model
     protected $keyType = 'string';
     protected $fillable = [
         "id",
-        "chuyen_xe_id",
-        "khach_hang_id",
+        "trip_id",
+        "customer_id",
         'status',
         'seat',
     ];

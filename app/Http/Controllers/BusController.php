@@ -18,7 +18,7 @@ class BusController extends Controller
             $xe = Bus::all();
             return BusResource::collection($xe);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -38,9 +38,9 @@ class BusController extends Controller
             $data = $request->all();
             $data['id'] = Uuid::uuid4()->toString();
             Bus::create($data);
-            return response()->json(['message' => 'Thêm xe thành công'], 201);
+            return response()->json(['message' => 'Add bus successfully'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -49,11 +49,11 @@ class BusController extends Controller
         try {
             $xe = Bus::find($id);
             if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+                return response()->json(['message' => 'Not exist bus'], 404);
             }
             return new BusResource($xe);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -74,15 +74,15 @@ class BusController extends Controller
             // find bus
             $bus = Bus::find($id);
             if (!$bus) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+                return response()->json(['message' => 'Not exist bus'], 404);
             }
 
             $data = $request->all();
 
             $bus->update($data);
-            return response()->json(['message' => 'Cập nhật xe thành công'], 200);
+            return response()->json(['message' => 'Update bus successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -92,13 +92,13 @@ class BusController extends Controller
         try {
             $xe = Bus::find($id);
             if (!$xe) {
-                return response()->json(['message' => 'Không tồn tại xe'], 404);
+                return response()->json(['message' => 'Not exist bus'], 404);
             }
 
             $xe->delete();
-            return response()->json(['message' => 'Xóa xe thành công'], 200);
+            return response()->json(['message' => 'Delete bus successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

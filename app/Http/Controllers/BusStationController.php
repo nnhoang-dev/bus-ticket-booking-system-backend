@@ -18,7 +18,7 @@ class BusStationController extends Controller
             $busStation = BusStation::all();
             return BusStationResource::collection($busStation);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -45,9 +45,9 @@ class BusStationController extends Controller
 
 
             BusStation::create($data);
-            return response()->json(['message' => 'Tạo nhà xe thành công'], 201);
+            return response()->json(['message' => 'Add bus station successfully'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -57,11 +57,11 @@ class BusStationController extends Controller
         try {
             $busStation = BusStation::find($id);
             if (!$busStation) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+                return response()->json(['message' => 'Not exist bus station'], 404);
             }
             return new BusStationResource($busStation);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -72,7 +72,6 @@ class BusStationController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'string',
                 'city' => 'string',
-
                 'address' => 'string',
                 'phone_number' => 'string',
             ]);
@@ -86,15 +85,15 @@ class BusStationController extends Controller
 
             $busStation = BusStation::find($id);
             if (!$busStation) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+                return response()->json(['message' => 'Not exist bus station'], 404);
             }
 
             $data = $request->all();
 
             $busStation->update($data);
-            return response()->json(['message' => 'Cập nhật nhà xe thành công'], 200);
+            return response()->json(['message' => 'Update bus station successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -104,13 +103,13 @@ class BusStationController extends Controller
         try {
             $busStation = BusStation::find($id);
             if (!$busStation) {
-                return response()->json(['message' => 'Không tồn tại nhà xe'], 404);
+                return response()->json(['message' => 'Not exist bus station'], 404);
             }
 
             $busStation->delete();
-            return response()->json(['message' => 'Xóa nhà xe thành công'], 200);
+            return response()->json(['message' => 'Delete bus station successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

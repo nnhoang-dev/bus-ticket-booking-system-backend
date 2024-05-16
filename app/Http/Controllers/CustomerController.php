@@ -3,19 +3,155 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ConfirmAccount;
+use App\Mail\PasswordCustomer;
 use App\Models\Customer;
 use App\Models\OTP;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Providers\Auth\Illuminate;
 use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+    public function validateUpdate($customer, $request)
+    {
+        if ($customer->email != $request->email) {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:customers,email',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+        }
+        if ($customer->phone_number != $request->phone_number) {
+            $validator = Validator::make($request->all(), [
+                'phone_number' => 'required|unique:customers,phone_number',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+        }
+        return true;
+    }
+
+
+    public function index()
+    {
+        try {
+            $customer = Customer::all();
+            return response()->json(['customer' => $customer], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
+    public function show(string $id)
+    {
+        try {
+            $customer = Customer::find($id);
+            if (!$customer) {
+                return response()->json(['message' => 'Not exist customer'], 404);
+            }
+            return response()->json(['customer' => $customer], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone_number' => 'required|string|unique:customers,phone_number',
+                'email' => 'required|email|unique:customers,email',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'date_of_birth' => 'required|date',
+                'gender' => 'required|in:0,1',
+                'address' => 'required|string',
+
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+            $customer = $request->all();
+            $customer['id'] = Uuid::uuid4()->toString();
+            $customer['password'] = mt_rand(10000000, 99999999);
+            $customer['status'] = 1;
+            Mail::to($customer['email'])->send(new PasswordCustomer($customer['password']));
+
+
+            Customer::create($customer);
+            return response()->json(['message' => 'Add customer successfully'], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
+    public function update(Request $request, string $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'date_of_birth' => 'required|date',
+                'gender' => 'required|in:0,1',
+                'address' => 'required|string',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+
+            $customer = Customer::find($id);
+            if (!$customer) {
+                return response()->json(['message' => 'Not exist customer'], 404);
+            }
+            $validPhoneEmail = $this->validateUpdate($customer, $request);
+            // return response()->json(['message' => ($validPhoneEmail !== true)], 200);
+            if ($validPhoneEmail !== true) {
+                return  $validPhoneEmail;
+            }
+
+            $data = $request->all();
+
+            $customer->update($data);
+            return response()->json(['message' => 'Update customer successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
+    public function destroy(string $id)
+    {
+        try {
+            $customer = Customer::find($id);
+            if (!$customer) {
+                return response()->json(['message' => 'Not exist customer'], 404);
+            }
+
+            $customer->delete();
+            return response()->json(['message' => 'Delete customer successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
     // Register a Customer.
     public function register()
     {
@@ -83,7 +219,7 @@ class CustomerController extends Controller
         }
     }
 
-    public function sendBackConfirmEmail()
+    public function resendComfirmEmail()
     {
         $validator = Validator::make(request()->all(), [
             'customer_id' => 'required|string|exists:customers,id',
@@ -117,13 +253,10 @@ class CustomerController extends Controller
     {
         $credentials = request(['phone_number', 'password']);
 
-        if (!$token = auth('customer_api')->attempt($credentials)) {
+        if ((!$token = auth('customer_api')->attempt($credentials)) || auth('customer_api')->user()->status == 0) {
             return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
         }
 
-        if (auth('customer_api')->user()->status == 0) {
-            return response()->json(['message' => 'Bạn không có quyền truy cập'], 401);
-        }
 
         return $this->respondWithToken($token);
         // $minutes = 60;
@@ -156,7 +289,7 @@ class CustomerController extends Controller
                 return response()->json("Thay đổi mật khẩu thất bại", 400);
             }
         } catch (\Throwable $th) {
-            return response()->json("Lỗi ở phía máy chủ", 500);
+            return response()->json("Server error", 500);
         }
     }
 
@@ -196,7 +329,7 @@ class CustomerController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth('employee_api')->refresh());
+        return $this->respondWithToken(auth('customer_api')->refresh());
     }
 
     /**

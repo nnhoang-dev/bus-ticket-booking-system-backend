@@ -21,7 +21,7 @@ class KhachHangController extends Controller
             $khachHang = KhachHang::all();
             return KhachHangResource::collection($khachHang);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -63,7 +63,7 @@ class KhachHangController extends Controller
                 'message' => 'Tạo khách hàng thành công'
             ], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -72,11 +72,11 @@ class KhachHangController extends Controller
         try {
             $khachHang = KhachHang::find($id);
             if (!$khachHang) {
-                return response()->json(['message' => 'Không tồn tại khách hàng'], 404);
+                return response()->json(['message' => 'Not exist khách hàng'], 404);
             }
             return new KhachHangResource($khachHang);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -115,7 +115,7 @@ class KhachHangController extends Controller
             // find khach_hang
             $khachHang = KhachHang::find($id);
             if (!$khachHang) {
-                return response()->json(['message' => 'Không tồn tại khách hàng'], 404);
+                return response()->json(['message' => 'Not exist khách hàng'], 404);
             }
 
             $data = $request->all();
@@ -126,7 +126,7 @@ class KhachHangController extends Controller
             $khachHang->update($data);
             return response()->json(['message' => 'Cập nhật khách hàng thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -137,13 +137,13 @@ class KhachHangController extends Controller
         try {
             $khachHang = KhachHang::find($id);
             if (!$khachHang) {
-                return response()->json(['message' => 'Không tồn tại khách hàng'], 404);
+                return response()->json(['message' => 'Not exist khách hàng'], 404);
             }
 
             $khachHang->delete();
             return response()->json(['message' => 'Xóa khách hàng thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

@@ -18,7 +18,7 @@ class KhuyenMaiController extends Controller
             $khuyenMai = KhuyenMai::all();
             return KhuyenMaiResource::collection($khuyenMai);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -41,7 +41,7 @@ class KhuyenMaiController extends Controller
             KhuyenMai::create($data);
             return response()->json(['message' => 'Tạo khuyến mãi thành công'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -50,11 +50,11 @@ class KhuyenMaiController extends Controller
         try {
             $khuyenMai = KhuyenMai::find($id);
             if (!$khuyenMai) {
-                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
+                return response()->json(['message' => 'Not exist khuyến mãi'], 404);
             }
             return new KhuyenMaiResource($khuyenMai);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -77,7 +77,7 @@ class KhuyenMaiController extends Controller
             // find khuyến mãi
             $khuyenMai = KhuyenMai::find($id);
             if (!$khuyenMai) {
-                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
+                return response()->json(['message' => 'Not exist khuyến mãi'], 404);
             }
 
             $data = $request->all();
@@ -85,7 +85,7 @@ class KhuyenMaiController extends Controller
             $khuyenMai->update($data);
             return response()->json(['message' => 'Cập nhật khuyến mãi thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -95,13 +95,13 @@ class KhuyenMaiController extends Controller
         try {
             $khuyenMai = KhuyenMai::find($id);
             if (!$khuyenMai) {
-                return response()->json(['message' => 'Không tồn tại khuyến mãi'], 404);
+                return response()->json(['message' => 'Not exist khuyến mãi'], 404);
             }
 
             $khuyenMai->delete();
             return response()->json(['message' => 'Xóa khuyến mãi thành công'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

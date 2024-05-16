@@ -17,7 +17,7 @@ class VeTamController extends Controller
             $veTam = VeTam::all();
             return response()->json($veTam, 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -49,7 +49,7 @@ class VeTamController extends Controller
         return response()->json(['message' => 'Tạo chuyến vé tạm thành công'], 201);
         try {
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -60,11 +60,11 @@ class VeTamController extends Controller
             // $chuyenXe = VeTam::with(['tuyen_xe.start_address', 'tuyen_xe.end_address', 'xe'])->find($id);
             $veTam = VeTam::find($id);
             if (!$veTam) {
-                return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+                return response()->json(['message' => 'Not exist chuyến xe'], 404);
             }
             return response()->json($veTam, 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -96,7 +96,7 @@ class VeTamController extends Controller
 
     //     $veTam = VeTam::find($id);
     //     if (!$veTam) {
-    //         return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+    //         return response()->json(['message' => 'Not exist chuyến xe'], 404);
     //     }
 
     //     $data = $request->all();
@@ -120,7 +120,7 @@ class VeTamController extends Controller
 
     //     $veTam = VeTam::find($id);
     //     if (!$veTam) {
-    //         return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+    //         return response()->json(['message' => 'Not exist chuyến xe'], 404);
     //     }
     //     if ($veTam['status'] == "pending") {
     //         $veTam->update(["status" => 'no']);
@@ -128,7 +128,7 @@ class VeTamController extends Controller
     //     return response()->json(['message' => 'Cập nhật chuyến xe thành công'], 200);
     //     try {
     //     } catch (\Throwable $th) {
-    //         return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+    //         return response()->json(['message' => 'Server error', "exception" => $th], 500);
     //     }
     // }
 
@@ -138,13 +138,13 @@ class VeTamController extends Controller
     //     try {
     //         $veTam = VeTam::find($id);
     //         if (!$veTam) {
-    //             return response()->json(['message' => 'Không tồn tại chuyến xe'], 404);
+    //             return response()->json(['message' => 'Not exist chuyến xe'], 404);
     //         }
 
     //         $veTam->delete();
     //         return response()->json(['message' => 'Xóa chuyến xe thành công'], 200);
     //     } catch (\Throwable $th) {
-    //         return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+    //         return response()->json(['message' => 'Server error', "exception" => $th], 500);
     //     }
     // }
 }

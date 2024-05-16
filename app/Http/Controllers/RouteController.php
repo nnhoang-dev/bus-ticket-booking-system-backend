@@ -18,7 +18,7 @@ class RouteController extends Controller
             $route = Route::with(['start_address', 'end_address'])->get();
             return response()->json(["route" => $route], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -41,24 +41,24 @@ class RouteController extends Controller
             }
 
             $data = $request->all();
-            // $start_address = BusStation::find($data['start_address']);
-            // $end_address = BusStation::find($data['end_address']);
-            // if (
-            //     !$start_address || !$end_address
-            //     || ($start_address['status'] == 0)
-            //     || ($end_address['status'] == 0)
-            //     || ($start_address == $end_address)
-            // ) {
-            //     return response()->json(["message" => "Tạo tuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
-            // }
+            $start_address = BusStation::find($data['start_address']);
+            $end_address = BusStation::find($data['end_address']);
+            if (
+                !$start_address || !$end_address
+                || ($start_address['status'] == 0)
+                || ($end_address['status'] == 0)
+                || ($start_address == $end_address)
+            ) {
+                return response()->json(["message" => "The bus station address was invalid"], 400);
+            }
             $start_address = BusStation::find($data['start_address']);
             $end_address = BusStation::find($data['end_address']);
             $data['name'] = $start_address->city . " - " . $end_address->city;
             $data['id'] = Uuid::uuid4()->toString();
             Route::create($data);
-            return response()->json(['message' => 'Tạo tuyến xe thành công'], 201);
+            return response()->json(['message' => 'Add route successfully'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -68,11 +68,11 @@ class RouteController extends Controller
         try {
             $route = Route::with(['start_address', 'end_address'])->find($id);
             if (!$route) {
-                return response()->json(['message' => 'Không tồn tại tuyến xe'], 404);
+                return response()->json(['message' => 'Not exist route'], 404);
             }
             return response()->json(["route" => $route], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -98,7 +98,7 @@ class RouteController extends Controller
 
             $route = Route::find($id);
             if (!$route) {
-                return response()->json(['message' => 'Không tồn tại tuyến xe'], 404);
+                return response()->json(['message' => 'Not exist route'], 404);
             }
 
             $data = $request->all();
@@ -110,12 +110,12 @@ class RouteController extends Controller
                 || ($end_address['status'] == 0)
                 || ($start_address == $end_address)
             ) {
-                return response()->json(["message" => "Tạo tuyến xe không thành công do địa chỉ nhà xe không hợp lệ"], 400);
+                return response()->json(["message" => "The bus station address was invalid"], 400);
             }
             $route->update($data);
-            return response()->json(['message' => 'Cập nhật tuyến xe thành công'], 200);
+            return response()->json(['message' => 'Update route successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 
@@ -125,13 +125,13 @@ class RouteController extends Controller
         try {
             $route = Route::find($id);
             if (!$route) {
-                return response()->json(['message' => 'Không tồn tại tuyến xe'], 404);
+                return response()->json(['message' => 'Not exist route'], 404);
             }
 
             $route->delete();
-            return response()->json(['message' => 'Xóa tuyến xe thành công'], 200);
+            return response()->json(['message' => 'Delete route successfully'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Lỗi ở phía server', "exception" => $th], 500);
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
 }

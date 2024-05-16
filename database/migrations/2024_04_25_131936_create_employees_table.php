@@ -19,9 +19,10 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->boolean('gender');
             $table->string('address');
-            $table->string('role');
+            $table->enum('role', ['accountant', 'manager', 'driver', 'customer_service', 'operator']);
             $table->boolean('status')->default(1);
             $table->timestamps();
+
 
             $table->index('phone_number');
             $table->index('email');
