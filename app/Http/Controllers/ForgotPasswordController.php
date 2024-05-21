@@ -17,8 +17,11 @@ class ForgotPasswordController extends Controller
         $validator = Validator::make(request()->all(), [
             'account' => 'required|string',
         ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
+            }
         }
 
         $customer = Customer::where('phone_number', request()->account)->first();
@@ -49,8 +52,11 @@ class ForgotPasswordController extends Controller
             'password' =>   'required|string|confirmed',
             'otp' => 'required|string|exists:otps,otp',
         ]);
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->toJson()], 400);
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
+            }
         }
 
         $otp = OTP::where('customer_id', request()->customer_id)

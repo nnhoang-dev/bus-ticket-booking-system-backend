@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\NhaXe>
  */
-class NhaXeFactory extends Factory
+class BusStationFactory extends Factory
 {
     /**
      * Define the model's default state.

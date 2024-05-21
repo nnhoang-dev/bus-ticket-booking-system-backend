@@ -14,7 +14,6 @@ class EmployeeFactory extends Factory
             'id' => Uuid::uuid4()->toString(),
             'phone_number' => '0909125679',
             'password' => Hash::make("0909125679"),
-
             'email' => 'nnhoanghd2004@gmail.com',
             'first_name' => 'Hoàng',
             'last_name' => 'Nguyễn',

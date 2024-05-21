@@ -2,14 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Bus;
+use App\Models\BusStation;
+use App\Models\Customer;
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
-use App\Models\NhanVien;
-use App\Models\KhachHang;
-use App\Models\NhaXe;
-use App\Models\Xe;
-use App\Models\KhuyenMai;
-
+use App\Models\Voucher;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,10 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        NhaXe::factory()->count(10)->create();
-        NhanVien::factory()->count(10)->create();
-        KhachHang::factory()->count(10)->create();
-        Xe::factory()->count(10)->create();
-        KhuyenMai::factory()->count(10)->create();
+        BusStation::factory()->count(10)->create();
+        Employee::factory()->count(10)->create();
+        Customer::factory()->count(10)->create();
+        Bus::factory()->count(10)->create();
+        Voucher::factory()->count(10)->create();
     }
 }

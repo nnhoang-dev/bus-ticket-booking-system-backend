@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 
-class KhachHangFactory extends Factory
+class CustomerFactory extends Factory
 {
 
     /**

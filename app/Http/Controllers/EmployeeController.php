@@ -229,8 +229,11 @@ class EmployeeController extends Controller
                 'new_password' => 'required|confirmed',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
             }
 
 

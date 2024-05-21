@@ -30,8 +30,9 @@ Route::group([
     'middleware' => ["auth:customer_api"],
     'prefix' => 'customer'
 ], function ($router) {
+    Route::put('update-my-account', [CustomerController::class, 'updateMyAccount']);
     Route::post('payment', [ThanhToanController::class, 'post']);
-    Route::post('doi-mat-khau', [CustomerController::class, 'changePassword']);
+    Route::put('change-password', [CustomerController::class, 'changePassword']);
     Route::get('logout', [CustomerController::class, 'logout']);
     Route::get('me', [CustomerController::class, 'me']);
 });

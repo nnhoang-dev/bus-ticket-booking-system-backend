@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Xe>
  */
-class KhuyenMaiFactory extends Factory
+class BusFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,10 +18,9 @@ class KhuyenMaiFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->name,
-            'discount' => $this->faker->randomFloat(2, 0, 20),
+            'id' => Uuid::uuid4()->toString(),
+            'license' => $this->faker->name,
             'status' => $this->faker->randomElement(['1']),
-
         ];
     }
 }

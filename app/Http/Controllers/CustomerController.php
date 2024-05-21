@@ -152,6 +152,35 @@ class CustomerController extends Controller
             return response()->json(['message' => 'Server error', "exception" => $th], 500);
         }
     }
+
+    public function updateMyAccount(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'date_of_birth' => 'required|date',
+                'gender' => 'required|in:0,1',
+                'address' => 'required|string',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+
+            $customer =  auth('customer_api')->user();
+            $data = $request->all();
+
+            $customer->update($data);
+            return response()->json(['message' => 'Update customer successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
     // Register a Customer.
     public function register()
     {
@@ -162,9 +191,11 @@ class CustomerController extends Controller
             'email' => 'required|email|unique:customers,email',
             'password' => 'required|confirmed|min:6',
         ]);
-        if ($validator->fails()) {
-            print_r(request()->all());
-            return response()->json(["message" => "Thông tin cung cấp không hợp lệ"], 400);
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
+            }
         }
 
         $customer = request()->all();
@@ -196,8 +227,11 @@ class CustomerController extends Controller
             'customer_id' => 'required|string|exists:customers,id',
             'otp' => 'required|string|exists:otps,otp',
         ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
+            }
         }
 
         $otp = OTP::where('customer_id', request()->customer_id)
@@ -224,8 +258,11 @@ class CustomerController extends Controller
         $validator = Validator::make(request()->all(), [
             'customer_id' => 'required|string|exists:customers,id',
         ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->stopOnFirstFailure()->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->all() as $error) {
+                return response()->json(["message" => $error], 400);
+            }
         }
 
         $customer = Customer::find(request()->customer_id);
@@ -271,25 +308,28 @@ class CustomerController extends Controller
         // echo "hehe";
         try {
             $validator = Validator::make(request()->all(), [
-                'password_old' => 'required|string',
-                'password_new' => 'required|confirmed',
+                'current_password' => 'required|string',
+                'new_password' => 'required|confirmed',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
             }
 
 
             $customer = auth('customer_api')->user();
-            if (Hash::check(request()->password_old, $customer->password)) {
-                $customer->password = request()->password_new;
+            if (Hash::check(request()->current_password, $customer->password)) {
+                $customer->password = request()->new_password;
                 $customer->save();
-                return response()->json("Thay đổi mật khẩu thành công", 200);
+                return response()->json(["message" => "Thay đổi mật khẩu thành công"], 200);
             } else {
-                return response()->json("Thay đổi mật khẩu thất bại", 400);
+                return response()->json(["message" => "Thay đổi mật khẩu thất bại"], 400);
             }
         } catch (\Throwable $th) {
-            return response()->json("Server error", 500);
+            return response()->json(["message" => "Server error"], 500);
         }
     }
 
