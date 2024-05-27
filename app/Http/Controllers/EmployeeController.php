@@ -142,6 +142,30 @@ class EmployeeController extends Controller
         }
     }
 
+    public function changeAvatar(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'avatar' => 'required|string',
+            ]);
+            if ($validator->stopOnFirstFailure()->fails()) {
+                $errors = $validator->errors();
+                foreach ($errors->all() as $error) {
+                    return response()->json(["message" => $error], 400);
+                }
+            }
+
+
+            $employee =  auth('employee_api')->user();
+            $data = $request->all();
+
+            $employee->update($data);
+            return response()->json(['message' => 'Update avatar successfully', 'data' => $data], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+        }
+    }
+
     public function updateMyAccount(Request $request)
     {
         try {

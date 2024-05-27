@@ -12,7 +12,7 @@ use App\Http\Controllers\BusController;
 use App\Http\Controllers\BusStationController;
 use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\TicketController;
-
+use App\Models\Employee;
 
 // Customer
 Route::post('/customer/forgot-password', [ForgotPasswordController::class, 'sendOTPForgotPassword']);
@@ -30,6 +30,7 @@ Route::group([
     'middleware' => ["auth:customer_api"],
     'prefix' => 'customer'
 ], function ($router) {
+    Route::put('change-avatar', [CustomerController::class, 'changeAvatar']);
     Route::put('update-my-account', [CustomerController::class, 'updateMyAccount']);
     Route::post('payment', [ThanhToanController::class, 'post']);
     Route::put('change-password', [CustomerController::class, 'changePassword']);
@@ -66,6 +67,7 @@ Route::group([
     Route::put('chance-ticket/{id}', [TicketController::class, 'changeTicket']);
     Route::delete('cancel-ticket/{id}', [TicketController::class, 'destroy']);
 
+    Route::put('change-avatar', [EmployeeController::class, 'changeAvatar']);
     Route::put('update-my-account', [EmployeeController::class, 'updateMyAccount']);
     Route::put('change-password', [EmployeeController::class, 'changePassword']);
     Route::get('logout', [EmployeeController::class, 'logout']);
