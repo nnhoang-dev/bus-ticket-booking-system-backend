@@ -12,6 +12,7 @@ use App\Models\Bus;
 
 class BusController extends Controller
 {
+    // Get all buses information
     public function index()
     {
         try {
@@ -22,6 +23,7 @@ class BusController extends Controller
         }
     }
 
+    // Create a new bus
     public function store(Request $request)
     {
         try {
@@ -44,6 +46,7 @@ class BusController extends Controller
         }
     }
 
+    // Get a bus by id
     public function show(string $id)
     {
         try {
@@ -57,6 +60,7 @@ class BusController extends Controller
         }
     }
 
+    // Update a bus
     public function update(Request $request, string $id)
     {
         try {
@@ -70,8 +74,7 @@ class BusController extends Controller
                 }
             }
 
-
-            // find bus
+            // Find bus
             $bus = Bus::find($id);
             if (!$bus) {
                 return response()->json(['message' => 'Not exist bus'], 404);
@@ -86,7 +89,7 @@ class BusController extends Controller
         }
     }
 
-
+    // Delete a bus
     public function destroy(string $id)
     {
         try {

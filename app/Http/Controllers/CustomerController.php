@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+    // Validate update infomation
     public function validateUpdate($customer, $request)
     {
         if ($customer->email != $request->email) {
@@ -43,6 +44,7 @@ class CustomerController extends Controller
     }
 
 
+    // Get all customers information
     public function index()
     {
         try {
@@ -53,6 +55,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Get a customer information by id
     public function show(string $id)
     {
         try {
@@ -66,6 +69,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Create a new customer
     public function store(Request $request)
     {
 
@@ -101,6 +105,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Update customer information by id
     public function update(Request $request, string $id)
     {
         try {
@@ -138,6 +143,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Delete a customer by id
     public function destroy(string $id)
     {
         try {
@@ -153,6 +159,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Change avatar
     public function changeAvatar(Request $request)
     {
         try {
@@ -177,6 +184,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Update a customer infomation
     public function updateMyAccount(Request $request)
     {
         try {
@@ -244,7 +252,7 @@ class CustomerController extends Controller
         );
     }
 
-
+    // Receive otp to confirm email address
     public function confirmEmail()
     {
         $validator = Validator::make(request()->all(), [
@@ -277,6 +285,7 @@ class CustomerController extends Controller
         }
     }
 
+    // Resend otp to confirm email address
     public function resendComfirmEmail()
     {
         $validator = Validator::make(request()->all(), [
@@ -326,7 +335,7 @@ class CustomerController extends Controller
         // ->cookie('token', $token, $minutes, $path, $domain, true, true);
     }
 
-
+    // Change pasword
     public function changePassword()
     {
         // echo "hehe";

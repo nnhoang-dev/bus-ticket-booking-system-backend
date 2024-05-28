@@ -15,6 +15,7 @@ use App\Models\Route;
 
 class TripController extends Controller
 {
+    // Get all trips information
     public function index()
     {
         try {
@@ -25,7 +26,7 @@ class TripController extends Controller
         }
     }
 
-
+    // Get a trip by id
     public function show(string $id)
     {
         try {
@@ -40,7 +41,7 @@ class TripController extends Controller
         }
     }
 
-
+    // Get trips same route
     public function getTripSameRoute()
     {
         try {
@@ -51,7 +52,7 @@ class TripController extends Controller
         }
     }
 
-
+    // Create a new trip
     public function store(Request $request)
     {
         try {
@@ -99,7 +100,7 @@ class TripController extends Controller
         }
     }
 
-
+    // Update a trip information
     public function update(Request $request, string $id)
     {
         try {
@@ -154,7 +155,7 @@ class TripController extends Controller
         }
     }
 
-
+    // Delete a trip by id
     public function destroy(string $id)
     {
         try {

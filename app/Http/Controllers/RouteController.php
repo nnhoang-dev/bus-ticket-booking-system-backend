@@ -12,6 +12,7 @@ use App\Models\Route;
 
 class RouteController extends Controller
 {
+    // Get all routes information
     public function index()
     {
         try {
@@ -22,7 +23,7 @@ class RouteController extends Controller
         }
     }
 
-
+    // Create a new route
     public function store(Request $request)
     {
         try {
@@ -62,7 +63,7 @@ class RouteController extends Controller
         }
     }
 
-
+    // Get a route information by id
     public function show(string $id)
     {
         try {
@@ -76,7 +77,7 @@ class RouteController extends Controller
         }
     }
 
-
+    // Update a route infomanation
     public function update(Request $request, string $id)
     {
         try {
@@ -119,7 +120,7 @@ class RouteController extends Controller
         }
     }
 
-
+    // Delete a route
     public function destroy(string $id)
     {
         try {

@@ -12,6 +12,7 @@ use App\Models\BusStation;
 
 class BusStationController extends Controller
 {
+    // Get all bus stations information
     public function index()
     {
         try {
@@ -22,7 +23,7 @@ class BusStationController extends Controller
         }
     }
 
-
+    // Create a new bus station
     public function store(Request $request)
     {
         try {
@@ -51,7 +52,7 @@ class BusStationController extends Controller
         }
     }
 
-
+    // Get a bus station by id
     public function show(string $id)
     {
         try {
@@ -65,7 +66,7 @@ class BusStationController extends Controller
         }
     }
 
-
+    // Update a bus station
     public function update(Request $request, string $id)
     {
         try {
@@ -97,7 +98,7 @@ class BusStationController extends Controller
         }
     }
 
-
+    // Delete a bus station
     function destroy(string $id)
     {
         try {

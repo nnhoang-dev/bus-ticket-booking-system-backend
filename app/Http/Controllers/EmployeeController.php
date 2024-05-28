@@ -14,6 +14,7 @@ use Ramsey\Uuid\Uuid;
 
 class EmployeeController extends Controller
 {
+    // Get all employees information
     public function index()
     {
         try {
@@ -24,6 +25,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Get a employee information by id
     public function show(string $id)
     {
         try {
@@ -37,6 +39,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Update a employee information
     public function update(Request $request, string $id)
     {
         try {
@@ -72,6 +75,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Delete a employee by id
     public function destroy(string $id)
     {
         try {
@@ -92,6 +96,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Get all employees information by role
     public function getAllEmployeesByRole(string $role)
     {
         try {
@@ -142,6 +147,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Change avatar
     public function changeAvatar(Request $request)
     {
         try {
@@ -166,6 +172,7 @@ class EmployeeController extends Controller
         }
     }
 
+    // Update person employee account
     public function updateMyAccount(Request $request)
     {
         try {
@@ -244,7 +251,7 @@ class EmployeeController extends Controller
         return $this->respondWithToken($token);
     }
 
-
+    // change password
     public function changePassword()
     {
         try {

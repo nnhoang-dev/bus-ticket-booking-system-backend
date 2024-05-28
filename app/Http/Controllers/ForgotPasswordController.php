@@ -12,6 +12,7 @@ use Ramsey\Uuid\Uuid;
 
 class ForgotPasswordController extends Controller
 {
+    // Send OTP to confirm forgot password
     public function sendOTPForgotPassword()
     {
         $validator = Validator::make(request()->all(), [
@@ -45,6 +46,7 @@ class ForgotPasswordController extends Controller
         ], 200);
     }
 
+    // Change password after confirm forgot password
     public function changePasswordForgotPassword()
     {
         $validator = Validator::make(request()->all(), [
