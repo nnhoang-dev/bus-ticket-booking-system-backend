@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\EmployeeResource;
+use App\Jobs\SendEmailJob;
 use App\Mail\PasswordEmployee;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -137,7 +138,10 @@ class EmployeeController extends Controller
             $employee = $request->all();
             $employee['id'] = Uuid::uuid4()->toString();
             $employee['password'] = mt_rand(10000000, 99999999);
-            Mail::to($employee['email'])->send(new PasswordEmployee($employee['password']));
+
+            SendEmailJob::dispatch('PasswordEmployee', $employee['email'], $employee['password']);
+
+            // Mail::to($employee['email'])->send(new PasswordEmployee($employee['password']));
 
 
             Employee::create($employee);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmailJob;
 use App\Mail\ConfirmAccount;
 use App\Mail\PasswordCustomer;
 use App\Models\Customer;
@@ -95,7 +96,10 @@ class CustomerController extends Controller
             $customer['id'] = Uuid::uuid4()->toString();
             $customer['password'] = mt_rand(10000000, 99999999);
             $customer['status'] = 1;
-            Mail::to($customer['email'])->send(new PasswordCustomer($customer['password']));
+
+            SendEmailJob::dispatch('PasswordCustomer', $customer['email'], $customer['password']);
+
+            // Mail::to($customer['email'])->send(new PasswordCustomer($customer['password']));
 
 
             Customer::create($customer);
@@ -241,12 +245,15 @@ class CustomerController extends Controller
             'customer_id' => $customer['id'],
             'otp' => $otp,
         ]);
-        Mail::to($customer['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
+
+        SendEmailJob::dispatch('ConfirmAccount', $customer['email'], $otp);
+        // Mail::to($customer['email'])->send(new ConfirmAccount($otp, 'confirm-account'));
 
         return response()->json(
             [
                 "message" => "Tạo tài khoản khách hàng thành công",
-                "id" => $customer['id']
+                "id" => $customer['id'],
+                "otp" => $otp,
             ],
             201
         );

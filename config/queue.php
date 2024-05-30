@@ -43,6 +43,13 @@ return [
             'after_commit' => false,
         ],
 
+        'bus_ticket_booking' => [
+            'driver' => 'database',
+            'table' => 'jobs',
+            'queue' => 'bus_ticket_booking',
+            'retry_after' => 90,
+        ],
+
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => env('BEANSTALKD_QUEUE_HOST', 'localhost'),
