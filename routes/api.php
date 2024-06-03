@@ -12,6 +12,10 @@ use App\Http\Controllers\BusStationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 
+
+// Route::group(function () {
+// })->middleware('throuttle:rateLimit');
+
 // [CUSTOMER]
 
 // Forgot password

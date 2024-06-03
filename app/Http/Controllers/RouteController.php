@@ -59,7 +59,7 @@ class RouteController extends Controller
             Route::create($data);
             return response()->json(['message' => 'Add route successfully'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Server error', "exception" => $th], 500);
+            return response()->json(['message' => 'Cannot create duplicate route', "exception" => $th], 500);
         }
     }
 
@@ -103,16 +103,19 @@ class RouteController extends Controller
             }
 
             $data = $request->all();
-            $start_address = BusStation::find($data['start_address']);
-            $end_address = BusStation::find($data['end_address']);
-            if (
-                !$start_address || !$end_address
-                || ($start_address['status'] == 0)
-                || ($end_address['status'] == 0)
-                || ($start_address == $end_address)
-            ) {
-                return response()->json(["message" => "The bus station address was invalid"], 400);
+            if (isset($data['name'])) {
+                $start_address = BusStation::find($data['start_address']);
+                $end_address = BusStation::find($data['end_address']);
+                if (
+                    !$start_address || !$end_address
+                    || ($start_address['status'] == 0)
+                    || ($end_address['status'] == 0)
+                    || ($start_address == $end_address)
+                ) {
+                    return response()->json(["message" => "The bus station address was invalid"], 400);
+                }
             }
+            // return response()->json(['message' => 'Update route successfully', 'data' => isset($data['name'])], 200);
             $route->update($data);
             return response()->json(['message' => 'Update route successfully'], 200);
         } catch (\Throwable $th) {

@@ -105,11 +105,12 @@ class TripController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'route_id' => 'required|string|exists:routes,id',
-                'bus_id' => 'required|string|exists:buses,id',
-                'driver_id' => 'required|string|exists:employees,id',
-                'date' => 'required|string',
-                'start_time' => 'required|date_format:H:i:s',
+                'route_id' => 'string|exists:routes,id',
+                'bus_id' => 'string|exists:buses,id',
+                'driver_id' => 'string|exists:employees,id',
+                'date' => 'string',
+                'start_time' => 'date_format:H:i:s',
+                'status' => 'in:1,0'
             ]);
             if ($validator->stopOnFirstFailure()->fails()) {
                 $errors = $validator->errors();
@@ -129,24 +130,26 @@ class TripController extends Controller
             }
 
             $data = $request->all();
-            $driver = Employee::find($data['driver_id']);
-            $route = Route::find($data['route_id']);
-            $bus = Bus::find($data['bus_id']);
-            if (
-                !$route || !$bus || !$driver
-                || ($route['status'] == 0)
-                || ($bus['status'] == 0)
-                || ($driver['status'] == 0)
-                || ($driver['role'] != "driver")
-            ) {
-                return response()->json(["message" => "The information was invalid"], 400);
-            }
+            if (isset($data['route_id'])) {
+                $driver = Employee::find($data['driver_id']);
+                $route = Route::find($data['route_id']);
+                $bus = Bus::find($data['bus_id']);
+                if (
+                    !$route || !$bus || !$driver
+                    || ($route['status'] == 0)
+                    || ($bus['status'] == 0)
+                    || ($driver['status'] == 0)
+                    || ($driver['role'] != "driver")
+                ) {
+                    return response()->json(["message" => "The information was invalid"], 400);
+                }
 
-            // auto generated end_time
-            $startTime = Carbon::createFromTimeString($data['start_time']);
-            $time = Carbon::createFromTimeString($route['time']);
-            $endTime = $startTime->addHour($time->hour)->addMinutes($time->minute)->addSeconds($time->second);
-            $data['end_time'] = $endTime;
+                // auto generated end_time
+                $startTime = Carbon::createFromTimeString($data['start_time']);
+                $time = Carbon::createFromTimeString($route['time']);
+                $endTime = $startTime->addHour($time->hour)->addMinutes($time->minute)->addSeconds($time->second);
+                $data['end_time'] = $endTime;
+            }
 
             $trip->update($data);
             return response()->json(['message' => 'Update trip successfully'], 200);
